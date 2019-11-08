@@ -8,8 +8,11 @@ import opennlp.tools.tokenize.TokenizerModel;
 import java.io.*;
  
 /**
-* Dictionary Lemmatizer Example in Apache OpenNLP
-*/
+ * This class modified tutorial code from www.tutorialkart.com for the specific purposes of this project.
+ * This class uses Apache OpenNLP to take in a String, tokenize it (split it into individual words, 
+ * separate punctuation), then label each token with their part of speech POS (see README for POS key),
+ * and print the lemma of each word.
+ */
 public class Lemmatizer {
  
     public static void main(String[] args){
