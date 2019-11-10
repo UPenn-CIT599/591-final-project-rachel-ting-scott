@@ -41,11 +41,11 @@ public class sentimentAnalysis {
 	}
 
 
-	public static void main(String[] args) {
-		sentimentAnalysis sA = new sentimentAnalysis();
-		for(String key : sA.getSentimentDict().keySet()) {
-			System.out.println(key + "," + sA.getSentimentDict().get(key));
-		}
-	}
+//	public static void main(String[] args) {
+//		sentimentAnalysis sA = new sentimentAnalysis();
+//		for(String key : sA.getSentimentDict().keySet()) {
+//			System.out.println(key + "," + sA.getSentimentDict().get(key));
+//		}
+//	}
 
 }
