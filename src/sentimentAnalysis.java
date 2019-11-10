@@ -14,12 +14,6 @@ public class sentimentAnalysis {
 		negativeWordCount = 0;
 		positiveWordCount = 0;
 		scoreOutput = 0;
-	}
-		
-	/**
-	 * This method creates a dictionary of positive and negative words
-	 */
-	public void createDictionary() {
 		File negative = new File("negative-words.txt");
 		try {
 			Scanner in = new Scanner(negative);
@@ -46,7 +40,7 @@ public class sentimentAnalysis {
 			e.printStackTrace();
 		}
 	}
-	
+
 	
 	/**
 	 * This method counts the positive and negative words in the text
@@ -55,12 +49,17 @@ public class sentimentAnalysis {
 	public void wordCounter(HashMap<String, Integer> NLPAnalysisResult) {
 		for (String key : NLPAnalysisResult.keySet()) {
 			String sentimentResult = sentimentDict.get(key.toLowerCase());
-			if (sentimentResult.equals("n")) {
-				negativeWordCount += NLPAnalysisResult.get(key);
-			}
-			else if (sentimentResult.equals("p")) {
-				positiveWordCount += NLPAnalysisResult.get(key);
-			}
+			if (sentimentResult != null) {
+				if (sentimentResult.equals("n")) {
+					negativeWordCount = negativeWordCount + NLPAnalysisResult.get(key);
+				}
+				else if (sentimentResult.equals("p")) {
+					positiveWordCount = positiveWordCount + NLPAnalysisResult.get(key);
+				}
+			}			
+//			else {
+//				;
+//			}	
 		}
 	}
 	
@@ -70,7 +69,7 @@ public class sentimentAnalysis {
 	 * @return scoreOutput
 	 */
 	public int scoreCounter() {		
-		scoreOutput = negativeWordCount * (-1) + positiveWordCount;				
+		scoreOutput = positiveWordCount - negativeWordCount;				
 		return scoreOutput;
 	}
 	
@@ -95,11 +94,25 @@ public class sentimentAnalysis {
 	}
 	
 
-//	public static void main(String[] args) {
-//		sentimentAnalysis sA = new sentimentAnalysis();
+	public static void main(String[] args) {
+		sentimentAnalysis sA = new sentimentAnalysis();
 //		for(String key : sA.getSentimentDict().keySet()) {
 //			System.out.println(key + "," + sA.getSentimentDict().get(key));
 //		}
-//	}
+		HashMap<String, Integer> trial = new HashMap<String, Integer>();
+		trial.put("Sherry", 3);
+		trial.put("abound", 1);
+		trial.put("abominable", 3);
+		trial.put("apple", 2);
+		trial.put("adaptable", 7);
+		trial.put("Accurate", 10);
+		
+		System.out.println(trial);
+		sA.wordCounter(trial);
+		System.out.println(sA.getNegativeWordCount());
+		System.out.println(sA.getPositiveWordCount());
+		sA.scoreCounter();
+		System.out.println(sA.getScoreOutput());
+	}
 
 }
