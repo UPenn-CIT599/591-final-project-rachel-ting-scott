@@ -17,14 +17,15 @@ import opennlp.tools.tokenize.TokenizerModel;
  */
 public class NLPAnalysis {
 	//	private String[] userWordsArray;
-	private String userWords; //a String or a String[] ??
+	private String userWords;
 	private InputStream tokenModelIn = null;
 	private InputStream posModelIn = null;
 	private InputStream dictLemmatizer = null; //(?)
 
 	private String[] tokensArray;
-	private HashMap<String, String> tokenToPOSTagMap;
+	private String[] tagsArray;
 	private HashMap<String, Integer> tokenToCountMap;
+	private HashMap<String, String> tokenToPOSTagMap;
 
 	/**
 	 * Constructor takes in a String array which is the cleaned text output from the webpage scraping
@@ -36,22 +37,66 @@ public class NLPAnalysis {
 	}
 
 	/**
+	 * Helper method that takes the String of user's text and tokenizes them
+	 * @return String[] of the tokens of the user's text
+	 */
+	public String[] tokenizer() {
+		try {
+			tokenModelIn = new FileInputStream("en-token.bin");
+			TokenizerModel tokenModel = new TokenizerModel(tokenModelIn);
+			Tokenizer tokenizer = new TokenizerME(tokenModel);
+			tokensArray = tokenizer.tokenize(userWords.toLowerCase());
+			//TESTING
+//			System.out.println("tokensArray:");
+//			for (String str : tokensArray) {
+//				System.out.print(str + "\t");
+//			}
+//			System.out.println(); //TESTING
+//			System.out.println(tokensArray[3]); //TESTING
+		
+		} catch (IOException e) {
+			// Model loading failed, handle the error
+			e.printStackTrace();
+		}
+		finally {
+			if (tokenModelIn != null) {
+				try {
+					tokenModelIn.close();
+				}
+				catch (IOException e) {
+				}
+			}
+		}
+		return tokensArray;
+	}
+	/**
+	 * Grabs all the tokens; counts their frequency; stores those key-value pairs in a HashMap
+	 * @return tokenToCountMap
+	 */
+	public HashMap<String, Integer> createTokenToCountMap() {
+		String[] temp = tokenizer();
+		tokenToCountMap = new HashMap<>();
+		for (String str : temp) {
+			if (tokenToCountMap.containsKey(str)) {
+				int tempCount = tokenToCountMap.get(str);
+				tempCount++;
+				tokenToCountMap.put(str, tempCount);
+			}
+			else {
+				tokenToCountMap.put(str, 1);
+			}
+		}
+		System.out.println(tokenToCountMap);
+		return tokenToCountMap;
+	}
+	
+	/**
 	 * Tags the parts of speech of each word in the user's input and stores those key-value pairs in a hashmap
 	 * @return HashMap of token to POS
 	 */
 	public HashMap<String, String> createTokenToPOSTagMap() {
-
+		String[] temp = tokenizer();
 		try {
-			// tokenize the sentence
-			tokenModelIn = new FileInputStream("en-token.bin");
-			TokenizerModel tokenModel = new TokenizerModel(tokenModelIn);
-			Tokenizer tokenizer = new TokenizerME(tokenModel);
-			tokensArray = tokenizer.tokenize(userWords);
-			//TESTING 
-			for (String str : tokensArray) {
-				System.out.println(str);
-			}
-
 			// Parts-Of-Speech Tagging
 			// reading parts-of-speech model to a stream
 			posModelIn = new FileInputStream("en-pos-maxent.bin");
@@ -60,30 +105,8 @@ public class NLPAnalysis {
 			// initializing the parts-of-speech tagger with model
 			POSTaggerME posTagger = new POSTaggerME(posModel);
 			// Tagger tagging the tokens
-//			String[] tagsArray = posTagger.tag(tokensArray);
-			String tags[] = posTagger.tag(tokensArray); //look up tags as datatype
-			//TESTING
-			for (String str : tags) {
-				System.out.println(str);
-			}
-			
-			//TESTING
-			System.out.println("Token\t:\tTag");
-			for(int i = 0; i < tokensArray.length; i++){
-				System.out.println(tokensArray[i] + "\t:\t" + tags[i]);
-			}
-
-			for(int i = 0; i < tokensArray.length; i++){
-				for (int j = 0; j < tags.length; j++) {
-					if (!tokenToPOSTagMap.containsKey(tokensArray[i])) {
-						tokenToPOSTagMap.put(tokensArray[i], tags[j]);
-					}
-					System.out.println(tokenToPOSTagMap);
-//					else {
-//						tokenToPOSTagMap.put(tokensArray[i], tagsArray[j]);
-//					}
-				}
-			}
+			tagsArray = posTagger.tag(temp);
+//			String tags[] = posTagger.tag(tokensArray); //look up tags as datatype
 		}
 		catch (IOException e) {
 			// Model loading failed, handle the error
@@ -104,17 +127,22 @@ public class NLPAnalysis {
 				catch (IOException e) {
 				}
 			}
+		}		
+		//TESTING
+		System.out.println("Token\t:\tTag");
+		for(int i = 0; i < temp.length; i++){
+			System.out.println(temp[i] + "\t:\t" + tagsArray[i]);
+		}
+
+		for(int i = 0; i < temp.length; i++){
+			for (int j = 0; j < tagsArray.length; j++) {
+				if (!tokenToPOSTagMap.containsKey(temp[i])) {
+					tokenToPOSTagMap.put(temp[i], tagsArray[j]);
+				}
+			}
 		}
 		System.out.println(tokenToPOSTagMap);
 		return tokenToPOSTagMap;
-	}
-
-	/**
-	 * Grabs all the adjectives from the tokens; counts their frequency; stores those key-value pairs in a HashMap
-	 * @return tokenToCountMap
-	 */
-	public HashMap<String, Integer> createTokenToCountMap() {
-		return tokenToCountMap;
 	}
 
 	/**
@@ -124,7 +152,7 @@ public class NLPAnalysis {
 	public HashMap<String, Integer> getTokenToCountMap() {
 		return tokenToCountMap;
 	}
-	
+
 	/**
 	 * getter for the tokensArray
 	 * @return
@@ -140,7 +168,7 @@ public class NLPAnalysis {
 				+ "she doesn't want to because she does not want to; however, she should. Whose car is that? "
 				+ "I want the teacher who is nice.");
 
-		nlp.createTokenToPOSTagMap();
 		nlp.createTokenToCountMap();
+//		nlp.createTokenToPOSTagMap();
 	}
 }
