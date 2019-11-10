@@ -19,12 +19,21 @@ public class Lemmatizer {
     	InputStream tokenModelIn = null;
         InputStream posModelIn = null;
         InputStream dictLemmatizer = null;
+        
+        String sentence = "John is 26 years old. He is older than me, but I am smarter than him. "
+        		+ "sad sadly sadder saddest slow slowly slower slowest not happy the news my car there are no cars. "
+        		+ "she doesn't want to because she does not want to; however, she should. Whose car is that? "
+        		+ "I want the teacher who is nice. He felt that saddest he has ever felt after that. He felt the "
+        		+ "most sad he has ever felt after taht. She was the slowest one. She is the best. They are"
+        		+ "the smartest. ";
     	
         try{
-        	String sentence = "John is 26 years old. He is older than me, but I am smarter than him. "
-            		+ "sad sadly sadder saddest slow slowly slower slowest not happy the news my car there are no cars. "
-            		+ "she doesn't want to because she does not want to; however, she should. Whose car is that? "
-            		+ "I want the teacher who is nice.";
+        	/*
+        	 * might want to keep this in a try depending on how it comes in? But JSoup should already be 
+        	 * storing it in string arrays, right?
+        	 */
+//        	String sentence = "John is 26 years old. He is older than me, but I am smarter than him. "
+
             // tokenize the sentence
             tokenModelIn = new FileInputStream("en-token.bin");
             TokenizerModel tokenModel = new TokenizerModel(tokenModelIn);
