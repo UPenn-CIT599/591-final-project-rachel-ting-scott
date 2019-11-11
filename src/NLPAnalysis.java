@@ -10,20 +10,21 @@ import opennlp.tools.tokenize.TokenizerME;
 import opennlp.tools.tokenize.TokenizerModel;
 
 /**
- * This class modified tutorial code from www.tutorialkart.com for the specific purposes of this project
  * This class uses Apache OpenNLP to take in a String, tokenize it (split it into individual words, 
  * separate punctuation), and then label each token with their part of speech POS (see README for POS key)
  * and the probability of their accuracy (the validity of the model).
+ * Tutorials from www.tutorialkart.com for basic use of OpenNLP methods and models
  */
 public class NLPAnalysis {
 	//	private String[] userWordsArray;
 	private String userWords;
 	private InputStream tokenModelIn = null;
 	private InputStream posModelIn = null;
-	private InputStream dictLemmatizer = null; //(?)
+	private InputStream dictLemmatizer = null;
 
 	private String[] tokensArray;
 	private String[] tagsArray;
+	private String[] lemmaArray;
 	private HashMap<String, Integer> tokenToCountMap;
 	private HashMap<String, String> tokenToPOSTagMap;
 
@@ -143,6 +144,15 @@ public class NLPAnalysis {
 		}
 		System.out.println(tokenToPOSTagMap);
 		return tokenToPOSTagMap;
+	}
+	
+	/**
+	 * Lematizes the words from the user's URL (minus stop words)
+	 * -----this might need to move to the KeywordAnalysis class-----
+	 * @return lemmaArray
+	 */
+	public String[] nlpLemmatize() {
+		return lemmaArray;		
 	}
 
 	/**
