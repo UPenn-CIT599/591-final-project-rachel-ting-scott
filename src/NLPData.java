@@ -88,6 +88,46 @@ public class NLPData {
 	}
 	
 	/**
+	 * this is the tokenizer with an output of an ArrayList instead of an array - I don't know which is better?
+	 * @param str
+	 * @return
+	 */
+	public ArrayList<String> tokenizerForArrayList(String str) {
+		try {
+			tokenModelIn = new FileInputStream("en-token.bin");
+			TokenizerModel tokenModel = new TokenizerModel(tokenModelIn);
+			Tokenizer tokenizer = new TokenizerME(tokenModel);
+			String[] temp = tokenizer.tokenize(userWords.toLowerCase());
+			ArrayList<String> tokensArrayList = new ArrayList<>();
+			for (String element : temp) {
+				tokensArrayList.add(element);
+			}
+//			//TESTING
+//			System.out.println("tokensArray:");
+//			for (String element : tokensArray) {
+//				System.out.print(element + "\t");
+//			}
+//			System.out.println(); //TESTING
+//			System.out.println(tokensArray[3]); //TESTING
+
+		} catch (IOException e) {
+			// Model loading failed, handle the error
+			e.printStackTrace();
+		}
+		finally {
+			if (tokenModelIn != null) {
+				try {
+					tokenModelIn.close();
+				}
+				catch (IOException e) {
+				}
+			}
+		}
+		
+		return tokenizerForArrayList(userWords);
+	}
+	
+	/**
 	 * Grabs all the tokens; counts their frequency; stores those key-value pairs in a HashMap
 	 * @return tokenToCountMap
 	 */
@@ -115,7 +155,8 @@ public class NLPData {
 	}
 	
 	public String[] tagger() {
-		String[] tempTags = tokenizer(userWords);
+		String[] tempTokens = tokenizer(userWords);
+
 		// reading parts-of-speech model to a stream
 		try {
 			posModelIn = new FileInputStream("en-pos-maxent.bin");
@@ -124,7 +165,7 @@ public class NLPData {
 			// initializing the parts-of-speech tagger with model
 			POSTaggerME posTagger = new POSTaggerME(posModel);
 			// Tagger tagging the tokens
-			tagsArray = posTagger.tag(tempTags);
+			tagsArray = posTagger.tag(tempTokens);
 			
 		} catch (FileNotFoundException e) {
 			// TODO Auto-generated catch block
@@ -139,6 +180,12 @@ public class NLPData {
 		for (String str : tagsArray) {
 			System.out.print(str +  "\t");
 		}
+		System.out.println();
+		System.out.println("tempTokens: ");
+		for (String str : tempTokens) {
+			System.out.print(str +  "\t");
+		}
+		
 		return tagsArray;
 
 	}
@@ -168,6 +215,7 @@ public class NLPData {
 		System.out.println("userWords: " + nlp.getUserWords());
 		nlp.createTokenToCountMap();
 		nlp.tagger();
+		nlp.tokenizerForArrayList(nlp.getUserWords());
 	}
 
 }
