@@ -24,13 +24,20 @@ public class NLPData {
 	private InputStream posModelIn = null;
 //	private InputStream dictLemmatizer = null;
 
-	private String userWords = "The story goes like this. John is a 26 year-old. He is older than me, but I am smarter than him. "
-			+ "sad sadly sadder saddest slow slowly slower slowest not happy the news my car there are no cars. "
-			+ "she doesn't want to because she does not want to; however, she should. Whose car is that? "
-			+ "I want the teacher who is nice.";
+	WebScraper webscraper = new WebScraper();
+	String out = webscraper.runScraper();
+	private String userWords = out;
+	//Just use the following String variable when not connected to WebScraper.java
+//	private String userWords = "The story goes like this. John is a 26 year-old. He is older than me, but I am smarter than him. "
+//			+ "sad sadly sadder saddest slow slowly slower slowest not happy the news my car there are no cars. "
+//			+ "she doesn't want to because she does not want to; however, she should. Whose car is that? "
+//			+ "I want the teacher who is nice.";
 	//customized list of stop words
-	private String[] stopWords = {"the", "then", "than", "and", "an", "a", "or", "with"};
+	private String[] stopWords = {"the", "then", "than", "and", "an", "a", "or", "with", ",", ".", ";", "!", "save"};
+	private ArrayList<String> stopWordsArrayList = new ArrayList<String>(Arrays.asList("the", 
+			"then", "than", "and", "an", "a", "or", "with", ",", ".", ";", "!", "save"));	
 	private String[] tokensArray;
+	private ArrayList<String> tokensArrayList;
 	private String[] tagsArray;
 //	private String[] lemmaArray;
 	private HashMap<String, Integer> tokenToCountMap;
@@ -62,7 +69,9 @@ public class NLPData {
 			TokenizerModel tokenModel = new TokenizerModel(tokenModelIn);
 			Tokenizer tokenizer = new TokenizerME(tokenModel);
 
-			tokensArray = tokenizer.tokenize(userWords.toLowerCase());
+			tokensArray = tokenizer.tokenize(str.toLowerCase());
+			//use when not connected to WebScraper.java
+//			tokensArray = tokenizer.tokenize(userWords.toLowerCase());
 //			//TESTING
 //			System.out.println("tokensArray:");
 //			for (String element : tokensArray) {
@@ -97,11 +106,17 @@ public class NLPData {
 			tokenModelIn = new FileInputStream("en-token.bin");
 			TokenizerModel tokenModel = new TokenizerModel(tokenModelIn);
 			Tokenizer tokenizer = new TokenizerME(tokenModel);
-			String[] temp = tokenizer.tokenize(userWords.toLowerCase());
-			ArrayList<String> tokensArrayList = new ArrayList<>();
+			String[] temp = tokenizer.tokenize(str.toLowerCase());
+			tokensArrayList = new ArrayList<>();
 			for (String element : temp) {
 				tokensArrayList.add(element);
 			}
+			tokensArrayList.removeAll(stopWordsArrayList);
+			//I don't know if the above version or this version is better?
+//			for (String stop : stopWordsArrayList) {
+//				tokensArrayList.remove(stop);
+//			}
+			
 //			//TESTING
 //			System.out.println("tokensArray:");
 //			for (String element : tokensArray) {
@@ -123,8 +138,8 @@ public class NLPData {
 				}
 			}
 		}
-		
-		return tokenizerForArrayList(userWords);
+//		System.out.println("Tokens ArrayList: " + tokensArrayList);
+		return tokensArrayList;
 	}
 	
 	/**
@@ -211,11 +226,18 @@ public class NLPData {
 	}
 
 	public static void main(String args[]) {
+//		WebScraper webscraper = new WebScraper();
+//		String out = webscraper.runScraper();
 		NLPData nlp = new NLPData();
-		System.out.println("userWords: " + nlp.getUserWords());
+		System.out.println("Words from URL: " + nlp.getUserWords());
 		nlp.createTokenToCountMap();
 		nlp.tagger();
-		nlp.tokenizerForArrayList(nlp.getUserWords());
+		System.out.println("Tokens as arraylist: ");
+		System.out.println(nlp.tokenizerForArrayList(nlp.getUserWords()));
+//		System.out.println("userWords: " + nlp.getUserWords());
+//		nlp.createTokenToCountMap();
+//		nlp.tagger();
+//		nlp.tokenizerForArrayList(nlp.getUserWords());
 	}
 
 }
