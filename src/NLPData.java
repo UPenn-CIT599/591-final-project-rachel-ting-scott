@@ -7,6 +7,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
+import opennlp.tools.lemmatizer.DictionaryLemmatizer;
 import opennlp.tools.postag.POSModel;
 import opennlp.tools.postag.POSTaggerME;
 import opennlp.tools.tokenize.Tokenizer;
@@ -22,16 +23,14 @@ public class NLPData {
 	 */
 	private InputStream tokenModelIn = null;
 	private InputStream posModelIn = null;
-//	private InputStream dictLemmatizer = null;
+	private InputStream dictLemmatizer = null;
 
 	WebScraper webscraper = new WebScraper();
 	String out = webscraper.runScraper();
 	private String userWords = out;
+
 	//Just use the following String variable when not connected to WebScraper.java
-//	private String userWords = "The story goes like this. John is a 26 year-old. He is older than me, but I am smarter than him. "
-//			+ "sad sadly sadder saddest slow slowly slower slowest not happy the news my car there are no cars. "
-//			+ "she doesn't want to because she does not want to; however, she should. Whose car is that? "
-//			+ "I want the teacher who is nice.";
+//	private String userWords = "The story goes like this. ADD MORE :)";
 	//customized list of stop words
 	private String[] stopWords = {"the", "then", "than", "and", "an", "a", "or", "with", ",", ".", ";", "!", "save"};
 	private ArrayList<String> stopWordsArrayList = new ArrayList<String>(Arrays.asList("the", 
@@ -39,7 +38,7 @@ public class NLPData {
 	private String[] tokensArray;
 	private ArrayList<String> tokensArrayList;
 	private String[] tagsArray;
-//	private String[] lemmaArray;
+	private ArrayList<String> lemmaArrayList;
 	private HashMap<String, Integer> tokenToCountMap;
 	private HashMap<String, String> tokenToPOSTagMap;
 
@@ -141,7 +140,7 @@ public class NLPData {
 //		System.out.println("Tokens ArrayList: " + tokensArrayList);
 		return tokensArrayList;
 	}
-	
+
 	/**
 	 * Grabs all the tokens; counts their frequency; stores those key-value pairs in a HashMap
 	 * @return tokenToCountMap
@@ -169,60 +168,103 @@ public class NLPData {
 		return tokenToCountMap;
 	}
 	
-	public String[] tagger() {
+//	/**
+//	 * tags the tokens ---> but I'm not sure that we need this now. 
+//	 */
+//	public String[] tagger() {
+//		String[] tempTokens = tokenizer(userWords);
+//
+//		// reading parts-of-speech model to a stream
+//		try {
+//			posModelIn = new FileInputStream("en-pos-maxent.bin");
+//			// loading the parts-of-speech model from stream
+//			POSModel posModel = new POSModel(posModelIn);
+//			// initializing the parts-of-speech tagger with model
+//			POSTaggerME posTagger = new POSTaggerME(posModel);
+//			// Tagger tagging the tokens
+//			tagsArray = posTagger.tag(tempTokens);
+//			
+//		} catch (FileNotFoundException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		} catch (IOException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
+//		//TESTING
+//		System.out.println();
+//		System.out.print("Tags from .tagger: ");
+//		for (String str : tagsArray) {
+//			System.out.print(str +  "\t");
+//		}
+//		System.out.println();
+//		System.out.println("tempTokens: ");
+//		for (String str : tempTokens) {
+//			System.out.print(str +  "\t");
+//		}		
+//		return tagsArray;
+//
+//	}
+	
+	/**
+	 * Takes tokensArrayList and tags each token for POS to then return an arraylist of the lemmas of each word.
+	 * The lemmas are used for more accurate keyword tagging in the KeywordAnalysis class.
+	 * @return arraylist of lemmas (not including custom, pre-defined stop words
+	 */
+	public ArrayList<String> lemmatizer() {
 		String[] tempTokens = tokenizer(userWords);
 
-		// reading parts-of-speech model to a stream
 		try {
-			posModelIn = new FileInputStream("en-pos-maxent.bin");
-			// loading the parts-of-speech model from stream
-			POSModel posModel = new POSModel(posModelIn);
-			// initializing the parts-of-speech tagger with model
-			POSTaggerME posTagger = new POSTaggerME(posModel);
-			// Tagger tagging the tokens
-			tagsArray = posTagger.tag(tempTokens);
-			
-		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		//TESTING
-		System.out.println();
-		System.out.print("Tags from .tagger: ");
-		for (String str : tagsArray) {
-			System.out.print(str +  "\t");
-		}
-		System.out.println();
-		System.out.println("tempTokens: ");
-		for (String str : tempTokens) {
-			System.out.print(str +  "\t");
-		}
-		
-		return tagsArray;
+            // Parts-Of-Speech Tagging
+            // reading parts-of-speech model to a stream
+            posModelIn = new FileInputStream("en-pos-maxent.bin");
+            // loading the parts-of-speech model from stream
+            POSModel posModel = new POSModel(posModelIn);
+            // initializing the parts-of-speech tagger with model
+            POSTaggerME posTagger = new POSTaggerME(posModel);
+            // Tagger tagging the tokens
+            String[] tags = posTagger.tag(tempTokens);
+//            String tags[] = posTagger.tag(tempTokens);
+ 
+            // loading the dictionary to input stream
+//            InputStream dictLemmatizer = new FileInputStream("dictionary"+File.separator+"en-lemmatizer.txt");
+            dictLemmatizer = new FileInputStream("en-lemmatizer.dict");
 
+            // loading the lemmatizer with dictionary
+            DictionaryLemmatizer lemmatizer = new DictionaryLemmatizer(dictLemmatizer);
+ 
+            // finding the lemmas
+            String[] lemmas = lemmatizer.lemmatize(tempTokens, tags);
+ 
+            // printing the results
+            System.out.println("\nPrinting lemmas for the given sentence...");
+            System.out.println("WORD -POSTAG : LEMMA");
+            for(int i = 0; i < tempTokens.length; i++){
+                System.out.println(tempTokens[i]+" -"+tags[i]+" : "+lemmas[i]);
+            }
+		} catch (FileNotFoundException e){
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+		return lemmaArrayList;
+		
 	}
 
 	/**
-	 * Getter methods for the following instance variables: userWords, stopWords, tokenToCountMap, and tokenToPOSTagMap
+	 * Getter methods for the following instance variables: userWords, lemmaArrayList, tokenToCountMap
 	 * @return
 	 */
 	public String getUserWords() {
 		return userWords;
 	}
-
-	public String[] getStopWords() { //DELETE THIS ONE? NOT SURE WHY THIS WOULD NEED TO BE SHARED???
-		return stopWords;
+	
+	public ArrayList<String> getLemmaArrayList() {
+		return lemmaArrayList;
 	}
 
 	public HashMap<String, Integer> getTokenToCountMap() {
 		return tokenToCountMap;
-	}
-
-	public HashMap<String, String> getTokenToPOSTagMap() {
-		return tokenToPOSTagMap;
 	}
 
 	public static void main(String args[]) {
@@ -231,9 +273,11 @@ public class NLPData {
 		NLPData nlp = new NLPData();
 		System.out.println("Words from URL: " + nlp.getUserWords());
 		nlp.createTokenToCountMap();
-		nlp.tagger();
+		nlp.lemmatizer();
+//		nlp.tagger();
 		System.out.println("Tokens as arraylist: ");
 		System.out.println(nlp.tokenizerForArrayList(nlp.getUserWords()));
+		
 //		System.out.println("userWords: " + nlp.getUserWords());
 //		nlp.createTokenToCountMap();
 //		nlp.tagger();
