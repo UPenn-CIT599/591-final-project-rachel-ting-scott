@@ -35,7 +35,6 @@ public class NLPData {
 	private ArrayList<String> stopWordsArrayList = new ArrayList<String>(Arrays.asList("the", 
 			"then", "than", "and", "an", "a", "or", "with", ",", ".", ";", "!", "java"));	
 	private String[] tokensArray;
-	//	private ArrayList<String> tokensArrayList; //DELETE??
 	private ArrayList<String> lemmaArrayList;
 	private HashMap<String, Integer> tokenToCountMap;
 
@@ -91,55 +90,6 @@ public class NLPData {
 		}
 		return tokensArray;
 	}
-
-	////DELETE??
-	//	/**
-	//	 * this is the tokenizer with an output of an ArrayList instead of an array - 
-	//	 * I don't know which is better? but I think the arraylist is better because it can remove stopwords before
-	//	 * other analysis.
-	//	 * @param str
-	//	 * @return
-	//	 */
-	//	public ArrayList<String> tokenizerForArrayList(String str) {
-	//		try {
-	//			tokenModelIn = new FileInputStream("en-token.bin");
-	//			TokenizerModel tokenModel = new TokenizerModel(tokenModelIn);
-	//			Tokenizer tokenizer = new TokenizerME(tokenModel);
-	//			String[] temp = tokenizer.tokenize(str.toLowerCase());
-	//			tokensArrayList = new ArrayList<>();
-	//			for (String element : temp) {
-	//				tokensArrayList.add(element);
-	//			}
-	//			tokensArrayList.removeAll(stopWordsArrayList);
-	//			//I don't know if the above version or this version is better?
-	//			//			for (String stop : stopWordsArrayList) {
-	//			//				tokensArrayList.remove(stop);
-	//			//			}
-	//
-	//			//			//TESTING
-	//			//			System.out.println("tokensArray:");
-	//			//			for (String element : tokensArray) {
-	//			//				System.out.print(element + "\t");
-	//			//			}
-	//			//			System.out.println(); //TESTING
-	//			//			System.out.println(tokensArray[3]); //TESTING
-	//
-	//		} catch (IOException e) {
-	//			// Model loading failed, handle the error
-	//			e.printStackTrace();
-	//		}
-	//		finally {
-	//			if (tokenModelIn != null) {
-	//				try {
-	//					tokenModelIn.close();
-	//				}
-	//				catch (IOException e) {
-	//				}
-	//			}
-	//		}
-	//		//		System.out.println("Tokens ArrayList: " + tokensArrayList);
-	//		return tokensArrayList;
-	//	}
 
 	/**
 	 * Grabs all the tokens; counts their frequency; stores those key-value pairs in a HashMap
