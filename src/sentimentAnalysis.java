@@ -9,7 +9,7 @@ public class sentimentAnalysis {
 	private int positiveWordCount;
 	private int scoreOutput;
 		
-	public sentimentAnalysis() {
+	public sentimentAnalysis(HashMap<String, Integer> NLPResult) {
 		sentimentDict = new HashMap<String, String>();
 		negativeWordCount = 0;
 		positiveWordCount = 0;
@@ -39,6 +39,10 @@ public class sentimentAnalysis {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		
+		wordCounter(NLPResult);
+		scoreCounter();
+		System.out.println(scoreOutput);
 		
 	}
 
@@ -95,25 +99,22 @@ public class sentimentAnalysis {
 	}
 	
 
-//	public static void main(String[] args) {
-//		sentimentAnalysis sA = new sentimentAnalysis();
+	public static void main(String[] args) {
+		
+		HashMap<String, Integer> trial = new HashMap<String, Integer>();
+		trial.put("Sherry", 3);
+		trial.put("abound", 1);
+		trial.put("abominable", 3);
+		trial.put("apple", 2);
+		trial.put("adaptable", 7);
+		trial.put("Accurate", 10);
+		
+		sentimentAnalysis sA = new sentimentAnalysis(trial);
 //		for(String key : sA.getSentimentDict().keySet()) {
 //			System.out.println(key + "," + sA.getSentimentDict().get(key));
 //		}
-//		HashMap<String, Integer> trial = new HashMap<String, Integer>();
-//		trial.put("Sherry", 3);
-//		trial.put("abound", 1);
-//		trial.put("abominable", 3);
-//		trial.put("apple", 2);
-//		trial.put("adaptable", 7);
-//		trial.put("Accurate", 10);
-//		
-//		System.out.println(trial);
-//		sA.wordCounter(trial);
-//		System.out.println(sA.getNegativeWordCount());
-//		System.out.println(sA.getPositiveWordCount());
-//		sA.scoreCounter();
-//		System.out.println(sA.getScoreOutput());
-//	}
+		
+		
+	}
 
 }
