@@ -99,22 +99,20 @@ public class sentimentAnalysis {
 	}
 	
 
-	public static void main(String[] args) {
-		
-		HashMap<String, Integer> trial = new HashMap<String, Integer>();
-		trial.put("Sherry", 3);
-		trial.put("abound", 1);
-		trial.put("abominable", 3);
-		trial.put("apple", 2);
-		trial.put("adaptable", 7);
-		trial.put("Accurate", 10);
-		
-		sentimentAnalysis sA = new sentimentAnalysis(trial);
+//	public static void main(String[] args) {
+//		
+//		HashMap<String, Integer> trial = new HashMap<String, Integer>();
+//		trial.put("Sherry", 3);
+//		trial.put("abound", 1);
+//		trial.put("abominable", 3);
+//		trial.put("apple", 2);
+//		trial.put("adaptable", 7);
+//		trial.put("Accurate", 10);
+//		
+//		sentimentAnalysis sA = new sentimentAnalysis(trial);
 //		for(String key : sA.getSentimentDict().keySet()) {
 //			System.out.println(key + "," + sA.getSentimentDict().get(key));
-//		}
-		
-		
-	}
+//		}		
+//	}
 
 }
