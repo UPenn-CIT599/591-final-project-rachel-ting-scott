@@ -3,11 +3,10 @@
  * @author Rachel Friend, Scott Theer, Ting-Hsuan Lee
  *
  */
-public class WebpageTopicSentimentRUNNER {
+public class RUNNER {
 
 	public static void main(String[] args) {
-		KeywordAnalysis keywords = new KeywordAnalysis();
-		sentimentAnalysis sentiments = new sentimentAnalysis();
+		NLPData nlp = new NLPData();
 
 	}
 
