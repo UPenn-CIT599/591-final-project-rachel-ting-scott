@@ -362,17 +362,14 @@ public class NLPData {
 		//		nlp.tokenizer(nlp.getUserWords());
 		nlp.createTokenToCountMap();
 		nlp.lemmatizer();
-<<<<<<< HEAD
 		nlp.findTopLemma();
 		nlp.findPeople();
 		nlp.findTopPeople();
 
 		//		System.out.println("TOKENSlIST: "); //TESTING
-=======
 		sentimentAnalysis sA = new sentimentAnalysis(nlp.getTokenToCountMap());
 		
 //		System.out.println("TOKENSlIST: ");
->>>>>>> e18297784e99ecb28eb68ac2579033020d7ac856
 		//		System.out.println(nlp.tokenizerForArrayList(nlp.getUserWords()));
 
 		//		System.out.println("userWords: " + nlp.getUserWords());
