@@ -193,7 +193,7 @@ public class NLPData {
 //		System.out.println("Words from URL: " + nlp.getUserWords());
 		nlp.createTokenToCountMap();
 		nlp.lemmatizer();
-		
+		sentimentAnalysis sA = new sentimentAnalysis(nlp.getTokenToCountMap());
 		
 //		System.out.println("TOKENSlIST: ");
 		//		System.out.println(nlp.tokenizerForArrayList(nlp.getUserWords()));
