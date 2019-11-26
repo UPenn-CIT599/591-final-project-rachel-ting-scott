@@ -4,6 +4,7 @@ final-project-rachel-ting-scott created by GitHub Classroom
 To-Do List
 +++get recommendations from nytimes.csv
 +++consolidate all into one main
++++get summarizing to work
 +++keep trying to get two names out of NER person identification
 +++output -- console or GUI?
 +++clean githup repo -- delete unused files
