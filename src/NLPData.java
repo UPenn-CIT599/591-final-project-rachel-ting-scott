@@ -268,7 +268,32 @@ public class NLPData {
 			String text = userWords;
 			String tokens[] = tokenizer.tokenize(text);
 			Span nameSpans[] = nameFinderME.find(tokens);
-
+			
+			/*
+			 * TRYING to get full names out -- 
+			 * but it's still hard/inaccurate because "Elizabeth Warren" and "Warren" get counted separately but
+			 * it's typical to have the two used interchangeably
+			 */
+//			ArrayList<String> idklist = new ArrayList<>();
+//			String idk = "";
+//			for(Span s: nameSpans){
+////	            System.out.print(s.toString());
+//	            System.out.print("  :  ");
+//	            // s.getStart() : contains the start index of possible name in the input string array
+//	            // s.getEnd() : contains the end index of the possible name in the input string array
+//	            for(int i = s.getStart(); i <s.getEnd(); i++){
+//	            	idk = tokens[i];
+//	                System.out.print(tokens[i] + " ");
+//	            }
+//	            
+//	            idklist.add(idk);
+//	            System.out.println("IDK: ");
+//	            for (String idkstr : idklist) {
+//	            	System.out.println(idkstr);
+//	            }
+//	            
+//			}
+			
 			for (int i = 0; i < nameSpans.length; i++) {
 				String name = tokens[nameSpans[i].getStart()];
 				peopleInArticleArrayList.add(name);
@@ -282,12 +307,14 @@ public class NLPData {
 				}
 				System.out.println(namePlusProbability);
 			}
+			
+			//TESTING
 			//			for (String str : peopleInArticleArrayList) {
 			//				System.out.println(str);
 			//			}
 
 		} catch (FileNotFoundException e) {
-
+		
 		} catch (IOException e) {
 
 		}
@@ -308,6 +335,53 @@ public class NLPData {
 		}
 		return peopleInArticleArrayList;
 	}
+	
+//	    /**
+//	     * method to find locations in the sentence
+//	     * @throws IOException
+//	     */
+//	    public void findName() throws IOException {
+//	        InputStream is = new FileInputStream("en-ner-person.bin");
+//	 
+//	        // load the model from file
+//	        TokenNameFinderModel model = new TokenNameFinderModel(is);
+//	        is.close();
+//	 
+//	        // feed the model to name finder class
+//	        NameFinderME nameFinder = new NameFinderME(model);
+//	 
+//	        // input string array
+//	        String[] sentence = new String[]{
+//	                "John",
+//	                "Smith",
+//	                "is",
+//	                "standing",
+//	                "next",
+//	                "to",
+//	                "bus",
+//	                "stop",
+//	                "and",
+//	                "waiting",
+//	                "for",
+//	                "Mike",
+//	                "."
+//	        };
+//	 
+//	        Span nameSpans[] = nameFinder.find(sentence);
+//	 
+//	        // nameSpans contain all the possible entities detected
+//	        for(Span s: nameSpans){
+//	            System.out.print(s.toString());
+//	            System.out.print("  :  ");
+//	            // s.getStart() : contains the start index of possible name in the input string array
+//	            // s.getEnd() : contains the end index of the possible name in the input string array
+//	            for(int index=s.getStart();index<s.getEnd();index++){
+//	                System.out.print(sentence[index]+" ");
+//	            }
+//	            System.out.println();
+//	        }
+//	    }
+	
 
 	public List<Entry<String, Long>> findTopPeople() {
 //		HashMap<String, Integer> topPeopleToCountMap = new HashMap<>();
