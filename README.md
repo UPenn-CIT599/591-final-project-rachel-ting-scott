@@ -2,11 +2,11 @@
 final-project-rachel-ting-scott created by GitHub Classroom
 
 To-Do List
-+get recommendations from nytimes.csv
-+consolidate all into one main
-+keep trying to get two names out of NER person identification
-+output -- console or GUI?
-+clean githup repo -- delete unused files
++++get recommendations from nytimes.csv
++++consolidate all into one main
++++keep trying to get two names out of NER person identification
++++output -- console or GUI?
++++clean githup repo -- delete unused files
 
 To use this program, users should not need to install anything because all the .jar files are added here in the lib folder.
 However, if installation is necessary, Mac users can follow these instructions to install via terminal: https://brewinstall.org/install-apache-opennlp-on-mac-with-brew/
