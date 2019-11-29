@@ -249,8 +249,7 @@ public class NLPData {
 
 		//TESTING
 		System.out.println();
-		//			System.out.println("lemmaToCountMap: " + lemmaToCountMap);
-		System.out.println("topLemmaToCountMap: " + topLemmaToCountMap);
+		System.out.println("Top 5 content words in this article: " + topLemmaToCountMap);
 		return topLemmaToCountMap;
 	}
 
@@ -334,54 +333,7 @@ public class NLPData {
 			}
 		}
 		return peopleInArticleArrayList;
-	}
-	
-//	    /**
-//	     * method to find locations in the sentence
-//	     * @throws IOException
-//	     */
-//	    public void findName() throws IOException {
-//	        InputStream is = new FileInputStream("en-ner-person.bin");
-//	 
-//	        // load the model from file
-//	        TokenNameFinderModel model = new TokenNameFinderModel(is);
-//	        is.close();
-//	 
-//	        // feed the model to name finder class
-//	        NameFinderME nameFinder = new NameFinderME(model);
-//	 
-//	        // input string array
-//	        String[] sentence = new String[]{
-//	                "John",
-//	                "Smith",
-//	                "is",
-//	                "standing",
-//	                "next",
-//	                "to",
-//	                "bus",
-//	                "stop",
-//	                "and",
-//	                "waiting",
-//	                "for",
-//	                "Mike",
-//	                "."
-//	        };
-//	 
-//	        Span nameSpans[] = nameFinder.find(sentence);
-//	 
-//	        // nameSpans contain all the possible entities detected
-//	        for(Span s: nameSpans){
-//	            System.out.print(s.toString());
-//	            System.out.print("  :  ");
-//	            // s.getStart() : contains the start index of possible name in the input string array
-//	            // s.getEnd() : contains the end index of the possible name in the input string array
-//	            for(int index=s.getStart();index<s.getEnd();index++){
-//	                System.out.print(sentence[index]+" ");
-//	            }
-//	            System.out.println();
-//	        }
-//	    }
-	
+	}	
 
 	public List<Entry<String, Long>> findTopPeople() {
 //		HashMap<String, Integer> topPeopleToCountMap = new HashMap<>();
@@ -408,7 +360,7 @@ public class NLPData {
 
 		//TESTING
 		System.out.println();
-		System.out.println("topPeopleToCountMap: " + topPeopleToCountMap);
+		System.out.println("Top 3 most commonly mentioned people: " + topPeopleToCountMap);
 
 		return topPeopleToCountMap;
 
@@ -440,7 +392,6 @@ public class NLPData {
 		nlp.findPeople();
 		nlp.findTopPeople();
 
-		//		System.out.println("TOKENSlIST: "); //TESTING
 		sentimentAnalysis sA = new sentimentAnalysis(nlp.getTokenToCountMap());
 		
 //		System.out.println("TOKENSlIST: ");
