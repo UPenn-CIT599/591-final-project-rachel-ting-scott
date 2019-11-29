@@ -1,5 +1,7 @@
 import java.awt.FlowLayout;
 import java.awt.GridLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
 import javax.swing.AbstractButton;
 import javax.swing.JButton;
@@ -7,6 +9,7 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextArea;
+import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
 
 /**
@@ -23,7 +26,7 @@ public class RUNNER implements Runnable{
 	JPanel innerTopPanel = new JPanel(new FlowLayout());
 	JLabel myLabel = new JLabel("Please enter a URL: (Please include http://)");
 	JPanel innerCenterPanel = new JPanel(new FlowLayout());
-	JTextArea urlTextBox = new JTextArea(1,30);
+	JTextField urlTextBox = new JTextField(30);
 	JPanel innerBottomPanel = new JPanel(new GridLayout(1,1));
 	JButton OKButton = new JButton("OK");
 	
@@ -38,7 +41,26 @@ public class RUNNER implements Runnable{
 	innerCenterPanel.add(urlTextBox);
 	innerCenterPanel.add(innerBottomPanel);
 	innerBottomPanel.add(OKButton);
-		
+	
+	
+	//urlTextBox ActionListener
+	urlTextBox.addActionListener(new ActionListener() {
+		@Override
+		public void actionPerformed(ActionEvent e) {			
+			AbstractButton myJTextField = null;
+			String url = myJTextField.getText();
+		}	
+	});
+	
+	//OKButton ActionListener
+	OKButton.addActionListener(new ActionListener() {
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			;
+		}
+			
+	});
+	
 		
 	//required pieces of code
 	frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
