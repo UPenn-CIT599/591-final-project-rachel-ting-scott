@@ -15,7 +15,7 @@ Name:
 
 Description:
 This program asks user's to input the URL of a news article and then analyzes the language of it to determine the top n content words 
-and the top n people mentioned, calculates a sentiment score based on positive or negative scoring on a scale, 
+and the top n people mentioned, provides a summary of the article, calculates a sentiment score based on positive or negative scoring on a scale, 
 and provides recommendations for other articles that contain keywords that match the top n content words of the user's original web page.
 The recommended articles are from a Kaggle data set of NY Times articles: https://www.kaggle.com/harishcscode/all-news-articles-from-home-page-media-house/version/1#nytimes.csv
 
