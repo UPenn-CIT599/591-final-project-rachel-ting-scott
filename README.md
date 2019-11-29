@@ -7,12 +7,17 @@ To-Do List
 +++get summarizing to work
 +++keep trying to get two names out of NER person identification
 +++output -- console or GUI?
++++add JavaDocs
 +++clean githup repo -- delete unused files
 
 Name:
 
 
 Description:
+This program asks user's to input the URL of a news article and then analyzes the language of it to determine the top n content words 
+and the top n people mentioned, calculates a sentiment score based on positive or negative scoring on a scale, 
+and provides recommendations for other articles that contain keywords that match the top n content words of the user's original web page.
+The recommended articles are from a Kaggle data set of NY Times articles: https://www.kaggle.com/harishcscode/all-news-articles-from-home-page-media-house/version/1#nytimes.csv
 
 
 Installation:
@@ -21,8 +26,8 @@ However, if installation is necessary, Mac users can follow these instructions t
 and windows users can ??? (SCOTT - I think you don 't use a mac? Can you help with this question?)
 or users can download directly from here: https://opennlp.apache.org/download.html
 
-Usage:
-
+Usage: 
+For analysis of the language in news article and recommendations of other articles with similar content
 
 Citations:
 Open Source API used for natural language processing of text: https://opennlp.apache.org/;
