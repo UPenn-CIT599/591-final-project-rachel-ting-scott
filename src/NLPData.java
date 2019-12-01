@@ -308,7 +308,13 @@ public class NLPData {
 			
 			for (int i = 0; i < nameSpans.length; i++) {
 				String name = tokens[nameSpans[i].getStart()];
-				peopleInArticleArrayList.add(name);
+				/*
+				 * Since 'The' and 'I' are commonly the first word of a sentence (and for 'The' - thus capitalized), the NER-Person Model
+				 * includes them as people's names, so removing here increases the accuracy of this method.
+				 */				
+				if (!name.equals("The") && (!name.equals("I"))) {
+					peopleInArticleArrayList.add(name);
+				}
 			}			
 
 			String namePlusProbability = "";
@@ -365,17 +371,65 @@ public class NLPData {
 	}
 
 	/**
-	 * Getter methods for the following instance variables: userWords, lemmaArrayList, tokenToCountMap
-	 * @return
+	 * Getter method for userWords
+	 * @return userWords
 	 */
 	public String getUserWords() {
 		return userWords;
 	}
 
+	/**
+	 * Getter method for lemmaArrayList
+	 * @return lemmaArrayList
+	 */
 	public ArrayList<String> getLemmaArrayList() {
 		return lemmaArrayList;
 	}
 
+	/**
+	 * Getter method for stopWordsArrayList
+	 * @return stopWordsArrayList
+	 */
+	public ArrayList<String> getStopWordsArrayList() {
+		return stopWordsArrayList;
+	}
+
+	/**
+	 * Getter method for tokenArrayList
+	 * @return tokenArrayList
+	 */
+	public ArrayList<String> getTokenArrayList() {
+		return tokenArrayList;
+	}
+
+	/**
+	 * Getter method for topLemmaToCountList
+	 * @return topLemmaToCountList
+	 */
+	public List<Map.Entry<String, Long>> getTopLemmaToCountList() {
+		return topLemmaToCountList;
+	}
+
+	/**
+	 * Getter method for peopleInArticleArrayList
+	 * @return peopleInArticleArrayList
+	 */
+	public ArrayList<String> getPeopleInArticleArrayList() {
+		return peopleInArticleArrayList;
+	}
+
+	/**
+	 * Getter method for topPeopleToCountList
+	 * @return topPeopleToCountList
+	 */
+	public List<Map.Entry<String, Long>> getTopPeopleToCountList() {
+		return topPeopleToCountList;
+	}
+
+	/**
+	 * Getter method for tokenToCountMap
+	 * @return tokenToCountMap
+	 */
 	public HashMap<String, Integer> getTokenToCountMap() {
 		return tokenToCountMap;
 	}
