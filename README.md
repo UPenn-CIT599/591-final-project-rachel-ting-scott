@@ -3,11 +3,10 @@ final-project-rachel-ting-scott created by GitHub Classroom
 
 To-Do List
 +++get recommendations from nytimes.csv
-+++consolidate all into one main
 +++get summarizing to work
-+++keep trying to get two names out of NER person identification
-+++output -- console or GUI?
++++output -- GUI
 +++add JavaDocs
++++add JUnit tests (we need 15)
 +++clean githup repo -- delete unused files
 
 Name:
