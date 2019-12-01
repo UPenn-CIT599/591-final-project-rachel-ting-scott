@@ -18,12 +18,17 @@ import javax.swing.SwingUtilities;
  *
  */
 public class RUNNER implements ActionListener{
+	//instance variables
 	JLabel myLabel;
 	JLabel result;
 	JTextField urlTextBox;
 	JTextArea resultAnalysis; 
 	JButton OKButton;
-	RUNNER() {
+	
+	
+	//constructor
+	public RUNNER() {
+	
 		JFrame frame = new JFrame("Website Analyzer");
 		myLabel = new JLabel("Please enter a URL: (Please include http://)");
 		myLabel.setBounds(50,50,300,20);
@@ -53,7 +58,10 @@ public class RUNNER implements ActionListener{
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		String url = urlTextBox.getText();
+		NLPData_copy_for_RUNNER nlpAnalysis = new NLPData_copy_for_RUNNER(url);
 		if (e.getSource() == OKButton) {
+			
+			
 			resultAnalysis.setText(url);
 		}
 	}
