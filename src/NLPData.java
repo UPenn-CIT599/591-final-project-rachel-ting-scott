@@ -24,24 +24,34 @@ import opennlp.tools.util.Span;
 
 public class NLPData {
 	/**
+	 * My questions still:
+	 * 1. do I need the finally blocks and null initializations for the files?
+	 * 2. when reading in more than one file per method, is it okay if the try/catch covers both at same time but then message cannot
+	 * say which file specifically wasn't read properly
+	 * 3. must I add all instance variables to the constructor?
+	 */
+	/**
+	 * Some definitions:
+	 * token = text parsed as single words
+	 * stop words = non-functional words in the English language (ex: 'the', 'and')
+	 * POS = parts of speech (ex: noun, verb, adv, etc)
+	 * lemma = the base form of a word in the dictionary form (ex: words --> word, types --> type)
 	 * This class uses Apache OpenNLP to take in a String of text as input from the WebScraper class, tokenize it, remove stop words, 
 	 * count the frequency of each token (for the purpose of the sentiment analysis), lemmatize the tokens, 
 	 * store those in a hashmap and pull out the top n content words for output,
 	 * extract the names of people and store those in a hashmap and pull out the top n people mentioned for output
-	 * Tutorials from www.tutorialkart.com for basic use of OpenNLP methods and models
+	 * In learning how to use OpenNLP methods and pre-trained models, tutorials from www.tutorialkart.com were used
 	 */
 	private InputStream tokenModelIn = null;
 	private InputStream posModelIn = null;
 	private InputStream dictLemmatizer = null;
 	private InputStream entityModelIn = null;
 
-	WebScraper webscraper = new WebScraper();
-	String out = webscraper.runScraper();
-	private String userWords = out;
+	private String userWords;
 
 	//Just use the following String variable when not connected to WebScraper.java
-	//	private String userWords = "The story goes like this. ADD MORE :)";	
-	private ArrayList<String> stopWordsArrayList = new ArrayList<String>();
+	//private String userWords = "The story goes like this. ADD MORE :)";	
+	private ArrayList<String> stopWordsArrayList;
 	private ArrayList<String> tokenArrayList;
 	private ArrayList<String> lemmaArrayList;
 	private HashMap<String, Integer> tokenToCountMap;
@@ -64,19 +74,24 @@ public class NLPData {
 	 * Constructor
 	 */
 	public NLPData() {
-
+		WebScraper webscraper = new WebScraper();
+		String out = webscraper.runScraper();
+		userWords = out;
 	}
 
 	/**
-	 * Helper method that takes the String of user's text and tokenizes it and removes the stop words
+	 * Helper method that takes the String of web page text, tokenizes it, and removes the stop words
 	 * @return ArrayList<String> - the tokens (of just content words) of the web page text
 	 */
 	public ArrayList<String> tokenizer(String str) {
 		try {
 			//reading OpenNLP tokens model to a stream
 			tokenModelIn = new FileInputStream("en-token.bin");
+			//loading OpenNLP tokens model from stream
 			TokenizerModel tokenModel = new TokenizerModel(tokenModelIn);
+			//initializing the tokenizer with OpenNLP pre-trained model
 			Tokenizer tokenizer = new TokenizerME(tokenModel);
+			//OpenNLP tokenize method for creating the tokens and storing them in a String[]
 			String[] tokensArray = tokenizer.tokenize(str.toLowerCase());
 			tokenArrayList = new ArrayList<String>();
 			for(String token : tokensArray) {
@@ -92,9 +107,10 @@ public class NLPData {
 			//			}
 
 		} catch (IOException e) {
-			// Model loading failed, handle the error
+			//Model loading failed, handle the error
+			System.out.println("Tokens model did not load properly.");
 			e.printStackTrace();
-		}
+		} 
 
 		//remove stop word from userWords using the stop-words-en.txt list of custom stop words
 		try {
@@ -102,6 +118,7 @@ public class NLPData {
 			Scanner sc = new Scanner(readStopWords);
 			while (sc.hasNext()) {
 				String stopWord = sc.next();
+				stopWordsArrayList = new ArrayList<String>();
 				stopWordsArrayList.add(stopWord);
 			}
 			sc.close();
@@ -160,27 +177,27 @@ public class NLPData {
 		ArrayList<String> tempTokensArrayList = tokenizer(userWords);
 
 		try {
-			// reading OpenNLP parts-of-speech model to a stream
+			//reading OpenNLP parts-of-speech model to a stream
 			posModelIn = new FileInputStream("en-pos-maxent.bin");
-			// loading OpenNLP parts-of-speech model from stream
+			//loading OpenNLP parts-of-speech model from stream
 			POSModel posModel = new POSModel(posModelIn);
-			// initializing the parts-of-speech tagger with model
+			//initializing the parts-of-speech tagger with OpenNLP pre-trained model
 			POSTaggerME posTagger = new POSTaggerME(posModel);
-			// OpenNLP Tag method for tagging the tokens (which takes in array, thus the conversion from array list to array
+			//OpenNLP tag method for tagging the tokens (which takes in array, thus the conversion from array list to array
 			String[] tempTokensArray = new String[tempTokensArrayList.size()]; 
 			tempTokensArray = tempTokensArrayList.toArray(tempTokensArray); 			
 			String[] tags = posTagger.tag(tempTokensArray);
 
-			// loading the dictionary to input stream
+			//loading the dictionary to input stream
 			dictLemmatizer = new FileInputStream("en-lemmatizer.dict");
 
-			// loading the lemmatizer with dictionary
+			//loading the lemmatizer with dictionary
 			DictionaryLemmatizer lemmatizer = new DictionaryLemmatizer(dictLemmatizer);
 
-			// OpenNLP lemmatize method for putting the lemma in a String[]
+			//OpenNLP lemmatize method for putting the lemma in a String[]
 			String[] lemmas = lemmatizer.lemmatize(tempTokensArray, tags);
 
-			// converting lemmas String[] to arraylist
+			//converting lemmas String[] to array list
 			lemmaArrayList = new ArrayList<String>();
 			for(String lemma : lemmas) {
 				if (!lemma.equals("O")) {
@@ -197,8 +214,10 @@ public class NLPData {
 			//				System.out.println(tempTokens[i]+" -"+tags[i]+" : "+lemmas[i]);
 			//			}
 		} catch (FileNotFoundException e){
+			System.out.println("Lemma dictionary file not found.");
 			e.printStackTrace();
 		} catch (IOException e) {
+			System.out.println("POS model did not load properly.");
 			e.printStackTrace();
 		}
 		finally {
@@ -207,6 +226,14 @@ public class NLPData {
 					posModelIn.close();
 				}
 				catch (IOException e) {
+				}
+			}
+			if (dictLemmatizer != null) {
+				try {
+					dictLemmatizer.close();
+				}
+				catch (IOException e) {
+					
 				}
 			}
 		}	
@@ -293,10 +320,8 @@ public class NLPData {
 				System.out.println(namePlusProbability);
 			}
 
-		} catch (FileNotFoundException e) {
-		
 		} catch (IOException e) {
-
+			System.out.println("Either Token Model or Named Entity Recognition - Person Model did not load properly.");
 		}
 		finally {
 			if (tokenModelIn != null) {
@@ -339,17 +364,17 @@ public class NLPData {
 
 	}
 
-//	/**
-//	 * Getter methods for the following instance variables: userWords, lemmaArrayList, tokenToCountMap
-//	 * @return
-//	 */
-//	public String getUserWords() {
-//		return userWords;
-//	}
-//
-//	public ArrayList<String> getLemmaArrayList() {
-//		return lemmaArrayList;
-//	}
+	/**
+	 * Getter methods for the following instance variables: userWords, lemmaArrayList, tokenToCountMap
+	 * @return
+	 */
+	public String getUserWords() {
+		return userWords;
+	}
+
+	public ArrayList<String> getLemmaArrayList() {
+		return lemmaArrayList;
+	}
 
 	public HashMap<String, Integer> getTokenToCountMap() {
 		return tokenToCountMap;
