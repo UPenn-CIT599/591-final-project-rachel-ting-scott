@@ -1,12 +1,9 @@
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
@@ -15,7 +12,6 @@ import java.util.Map.Entry;
 import java.util.Scanner;
 import java.util.stream.Collectors;
 
-import opennlp.tools.doccat.DoccatModel;
 import opennlp.tools.lemmatizer.DictionaryLemmatizer;
 import opennlp.tools.namefind.NameFinderME;
 import opennlp.tools.namefind.TokenNameFinderModel;
@@ -28,9 +24,10 @@ import opennlp.tools.util.Span;
 
 public class NLPData {
 	/**
-	 * This class uses Apache OpenNLP to take in a String, tokenize it (split it into individual words, 
-	 * separate punctuation), and then label each token with their part of speech POS (see README for POS key)
-	 * and the probability of their accuracy (the validity of the model).
+	 * This class uses Apache OpenNLP to take in a String of text as input from the WebScraper class, tokenize it, remove stop words, 
+	 * count the frequency of each token (for the purpose of the sentiment analysis), lemmatize the tokens, 
+	 * store those in a hashmap and pull out the top n content words for output,
+	 * extract the names of people and store those in a hashmap and pull out the top n people mentioned for output
 	 * Tutorials from www.tutorialkart.com for basic use of OpenNLP methods and models
 	 */
 	private InputStream tokenModelIn = null;
@@ -45,34 +42,34 @@ public class NLPData {
 	//Just use the following String variable when not connected to WebScraper.java
 	//	private String userWords = "The story goes like this. ADD MORE :)";	
 	private ArrayList<String> stopWordsArrayList = new ArrayList<String>();
-	//	private String[] tokensArray;
 	private ArrayList<String> tokenArrayList;
 	private ArrayList<String> lemmaArrayList;
-	private HashMap<String, Integer> lemmaToCountMap;
-	private List<Map.Entry<String, Long>> topLemmaToCountMap;
+	private HashMap<String, Integer> tokenToCountMap;
+	private List<Map.Entry<String, Long>> topLemmaToCountList;
 	private ArrayList<String> peopleInArticleArrayList;
-	private List<Map.Entry<String, Long>> topPeopleToCountMap;
+	private List<Map.Entry<String, Long>> topPeopleToCountList;
+
+	//to be used in potential future iterations
+//	/**
+//	 * Constructor takes in a String array which is the cleaned text output from the webpage scraping
+//	 * of the user's URL input.
+//	 * @param userWords
+//	 */
+//	public NLPData(String userWords) {
+//		this.userWords = userWords;
+//
+//	}
 
 	/**
-	 * Constructor takes in a String array which is the cleaned text output from the webpage scraping
-	 * of the user's URL input.
-	 * @param userWords
-	 */
-	public NLPData(String userWords) {
-		this.userWords = userWords;
-
-	}
-
-	/**
-	 * Overloaded constructor
+	 * Constructor
 	 */
 	public NLPData() {
 
 	}
 
 	/**
-	 * Helper method that takes the String of user's text and tokenizes them
-	 * @return String[] of the tokens of the user's text
+	 * Helper method that takes the String of user's text and tokenizes it and removes the stop words
+	 * @return ArrayList<String> - the tokens (of just content words) of the web page text
 	 */
 	public ArrayList<String> tokenizer(String str) {
 		try {
@@ -93,8 +90,6 @@ public class NLPData {
 			//			for (String element : tokensArray) {
 			//				System.out.print(element + "\t");
 			//			}
-			//			System.out.println(); //TESTING
-			//			System.out.println(tokensArray[3]); //TESTING
 
 		} catch (IOException e) {
 			// Model loading failed, handle the error
@@ -131,40 +126,38 @@ public class NLPData {
 
 	/**
 	 * Grabs all the tokens; counts their frequency; stores those key-value pairs in a HashMap
-	 * @return lemmaToCountMap
+	 * @return tokenToCountMap
 	 */
 	public HashMap<String, Integer> createTokenToCountMap() {	
 		ArrayList<String> tempTokens = tokenizer(userWords);
-		lemmaToCountMap = new HashMap<>();
+		tokenToCountMap = new HashMap<>();
 		for (String str : tempTokens) {
-			if (lemmaToCountMap.containsKey(str)) {
-				int tempCount = lemmaToCountMap.get(str);
+			if (tokenToCountMap.containsKey(str)) {
+				int tempCount = tokenToCountMap.get(str);
 				tempCount++;
-				lemmaToCountMap.put(str, tempCount);
+				tokenToCountMap.put(str, tempCount);
 			}
 			else {
-				lemmaToCountMap.put(str, 1);
+				tokenToCountMap.put(str, 1);
 			}
 		}
 		//		for (String s : stopWordsArrayList) {
-		//			lemmaToCountMap.remove(s);
+		//			tokenToCountMap.remove(s);
 		//		}
 
 		//TESTING
 		System.out.println();
-		System.out.println("lemmaToCountMap: " + lemmaToCountMap);
-		return lemmaToCountMap;
+		System.out.println("tokenToCountMap: " + tokenToCountMap);
+		return tokenToCountMap;
 	}
 
 	/**
-	 * Takes tokens ArrayList and tags each token for POS to then 
-	 * return an arraylist of the lemmas of each word, excluding custom, pre-defined stop words.
-	 * The lemmas are used for more accurate keyword tagging in the KeywordAnalysis class.
-	 * @return arraylist of lemmas (not including custom, pre-defined stop words
+	 * Takes tokens array list and tags each token for POS to then returns an array list of the lemmas of each content word.
+	 * The lemmas are used for outputting the most frequent content words of the web page. 
+	 * @return lemmaArrayList an array list of lemmas (of content words only)
 	 */
 	public ArrayList<String> lemmatizer() {
 		ArrayList<String> tempTokensArrayList = tokenizer(userWords);
-		//		ArrayList<String> temp = tokenizerForArrayList(userWords);
 
 		try {
 			// reading OpenNLP parts-of-speech model to a stream
@@ -222,26 +215,15 @@ public class NLPData {
 	}
 
 	/**
-	 * Creates HashMap of lemma:count and returns the top n lemma
-	 * @return int top n lemma
+	 * Uses Array List of lemma created in the lemmatizer method to create a map of the lemma and their frequency and 
+	 * then sorts that by converting it to a list and comparing the values in order to return the top n lemma
+	 * @return topLemmaToCountList list of top n lemma and their frequency of occurrence
 	 */
 	public List<Entry<String, Long>> findTopLemma() {
-		//		HashMap<String, Integer> lemmaToCountMap = new HashMap<>();
-		//		for (String str : lemmaArrayList) {
-		//			if (lemmaToCountMap.containsKey(str)) {
-		//				int tempCount = lemmaToCountMap.get(str);
-		//				tempCount++;
-		//				lemmaToCountMap.put(str, tempCount);
-		//			}
-		//			else {
-		//				lemmaToCountMap.put(str, 1);
-		//			}
-		//		}
-
 		Map<String, Long> tempMap = lemmaArrayList.stream()
 				.collect(Collectors.groupingBy(w -> w, Collectors.counting()));
 
-		topLemmaToCountMap = tempMap.entrySet().stream()
+		topLemmaToCountList = tempMap.entrySet().stream()
 				.sorted(Map.Entry.comparingByValue(Comparator.reverseOrder()))
 				//limit is hard-coded for how many top words you want returned
 				.limit(5)
@@ -249,10 +231,14 @@ public class NLPData {
 
 		//TESTING
 		System.out.println();
-		System.out.println("Top 5 content words in this article: " + topLemmaToCountMap);
-		return topLemmaToCountMap;
+		System.out.println("Top 5 content words in this article: " + topLemmaToCountList);
+		return topLemmaToCountList;
 	}
 
+	/**
+	 * Extracts the people's names from the web page and calculates the probability of accuracy
+	 * @return peopleInArticleArrayList list of the people in the article
+	 */
 	public ArrayList<String> findPeople() {
 		peopleInArticleArrayList = new ArrayList<>();
 		try {
@@ -270,7 +256,7 @@ public class NLPData {
 			
 			/*
 			 * TRYING to get full names out -- 
-			 * but it's still hard/inaccurate because "Elizabeth Warren" and "Warren" get counted separately but
+			 * but it's still hard/inaccurate anyway because "Elizabeth Warren" and "Warren" get counted separately but
 			 * it's typical to have the two used interchangeably
 			 */
 //			ArrayList<String> idklist = new ArrayList<>();
@@ -306,11 +292,6 @@ public class NLPData {
 				}
 				System.out.println(namePlusProbability);
 			}
-			
-			//TESTING
-			//			for (String str : peopleInArticleArrayList) {
-			//				System.out.println(str);
-			//			}
 
 		} catch (FileNotFoundException e) {
 		
@@ -335,57 +316,48 @@ public class NLPData {
 		return peopleInArticleArrayList;
 	}	
 
+	/**
+	 * Uses Array List of people created in the findPeople method to create a map of the people mentioned in the web page 
+	 * and their frequency and then sorts that by converting it to a list and comparing the values in order to return the top n people
+	 * @return topPeopleToCountList list of top n people and their frequency of occurrence
+	 */
 	public List<Entry<String, Long>> findTopPeople() {
-//		HashMap<String, Integer> topPeopleToCountMap = new HashMap<>();
-//		for (String key : peopleInArticleArrayList) {
-//			if (topPeopleToCountMap.containsKey(key)) {		
-//				int tempCount = topPeopleToCountMap.get(key);
-//				tempCount++;
-//				topPeopleToCountMap.put(key, tempCount);
-//			}
-//			else {
-//				topPeopleToCountMap.put(key, 1);
-//			}
-//		}
-//		System.out.println("TOP PEOPLE MAP: " + topPeopleToCountMap);
-		
 		Map<String, Long> tempMap = peopleInArticleArrayList.stream()
 				.collect(Collectors.groupingBy(w -> w, Collectors.counting()));
 
-		topPeopleToCountMap = tempMap.entrySet().stream()
+		topPeopleToCountList = tempMap.entrySet().stream()
 				.sorted(Map.Entry.comparingByValue(Comparator.reverseOrder()))
-				//limit is hard-coded for how many top words you want returned
+				//limit is hard-coded for how many top people you want returned
 				.limit(3)
 				.collect(Collectors.toList());
 
 		//TESTING
 		System.out.println();
-		System.out.println("Top 3 most commonly mentioned people: " + topPeopleToCountMap);
+		System.out.println("Top 3 most commonly mentioned people: " + topPeopleToCountList);
 
-		return topPeopleToCountMap;
+		return topPeopleToCountList;
 
 	}
 
-	/**
-	 * Getter methods for the following instance variables: userWords, lemmaArrayList, lemmaToCountMap
-	 * @return
-	 */
-	public String getUserWords() {
-		return userWords;
-	}
-
-	public ArrayList<String> getLemmaArrayList() {
-		return lemmaArrayList;
-	}
+//	/**
+//	 * Getter methods for the following instance variables: userWords, lemmaArrayList, tokenToCountMap
+//	 * @return
+//	 */
+//	public String getUserWords() {
+//		return userWords;
+//	}
+//
+//	public ArrayList<String> getLemmaArrayList() {
+//		return lemmaArrayList;
+//	}
 
 	public HashMap<String, Integer> getTokenToCountMap() {
-		return lemmaToCountMap;
+		return tokenToCountMap;
 	}
 
 	public static void main(String args[]) {
 		NLPData nlp = new NLPData();
-		//		System.out.println("Words from URL: " + nlp.getUserWords());
-		//		nlp.tokenizer(nlp.getUserWords());
+
 		nlp.createTokenToCountMap();
 		nlp.lemmatizer();
 		nlp.findTopLemma();
@@ -393,13 +365,6 @@ public class NLPData {
 		nlp.findTopPeople();
 
 		sentimentAnalysis sA = new sentimentAnalysis(nlp.getTokenToCountMap());
-		
-//		System.out.println("TOKENSlIST: ");
-		//		System.out.println(nlp.tokenizerForArrayList(nlp.getUserWords()));
-
-		//		System.out.println("userWords: " + nlp.getUserWords());
-		//		nlp.createTokenToCountMap();
-		//		nlp.tokenizerForArrayList(nlp.getUserWords());
 	}
 
 }

@@ -61,7 +61,6 @@ public class RUNNER implements ActionListener{
 		NLPData_copy_for_RUNNER nlpAnalysis = new NLPData_copy_for_RUNNER(url);
 		if (e.getSource() == OKButton) {
 			
-			
 			resultAnalysis.setText(url);
 		}
 	}
