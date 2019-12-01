@@ -52,6 +52,7 @@ at
 available
 away
 awfully
+b
 be
 became
 because
@@ -75,6 +76,7 @@ both
 brief
 but
 by
+c
 came
 can
 cannot
@@ -104,6 +106,7 @@ couldn't
 course
 c's
 currently
+d
 definitely
 described
 despite
@@ -120,6 +123,7 @@ don't
 down
 downwards
 during
+e
 each
 edu
 eg
@@ -143,6 +147,7 @@ ex
 exactly
 example
 except
+f
 far
 few
 fifth
@@ -159,6 +164,7 @@ four
 from
 further
 furthermore
+g
 get
 gets
 getting
@@ -171,6 +177,7 @@ gone
 got
 gotten
 greetings
+h
 had
 hadn't
 happens
@@ -235,13 +242,16 @@ its
 it's
 itself
 i've
+j
 just
+k
 keep
 keeps
 kept
 know
 known
 knows
+l
 last
 lately
 later
@@ -260,6 +270,7 @@ look
 looking
 looks
 ltd
+m
 mainly
 many
 may
@@ -278,6 +289,7 @@ must
 mustn't
 my
 myself
+n
 name
 namely
 nd
@@ -305,6 +317,7 @@ novel
 now
 nowhere
 obviously
+o
 of
 off
 often
@@ -331,6 +344,7 @@ outside
 over
 overall
 own
+p
 particular
 particularly
 per
@@ -342,9 +356,11 @@ possible
 presumably
 probably
 provides
+q
 que
 quite
 qv
+r
 rather
 rd
 re
@@ -470,6 +486,7 @@ trying
 t's
 twice
 two
+u
 un
 under
 unfortunately
@@ -486,12 +503,14 @@ useful
 uses
 using
 usually
+v
 value
 various
 very
 via
 viz
 vs
+w
 want
 wants
 was
@@ -544,6 +563,8 @@ wonder
 won't
 would
 wouldn't
+x
+y
 yes
 yet
 you
@@ -555,6 +576,7 @@ yours
 yourself
 yourselves
 you've
+z
 zero
 ~
 `
