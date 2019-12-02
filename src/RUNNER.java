@@ -61,6 +61,17 @@ public class RUNNER implements ActionListener{
 		NLPData_copy_for_RUNNER nlpAnalysis = new NLPData_copy_for_RUNNER(url);
 		if (e.getSource() == OKButton) {
 			
+			/*
+			 * If it can be like this:
+			 * NLPData nlp = new NLPData(url); // the userinput url get passed into webscraper runScraper() method
+			 * 								   // and then NLPData methods like lemmatizer(),findTopLemma(), etc. get run
+			 * 								   // and I can use nlp.getTopLemmaToCountList() and other getters to convert 
+			 *  							   // the instance variables into Strings
+			 *  							   // These strings can then be passed into resultAnalysis.setText()
+			 *      						   // to be printed in the bottom TextArea of the UI. 
+			 * 
+			 */
+	
 			resultAnalysis.setText(url);
 		}
 	}
