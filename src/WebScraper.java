@@ -1,7 +1,5 @@
 import java.io.IOException;
-import java.net.MalformedURLException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Scanner;
 
 import org.jsoup.*;
@@ -39,7 +37,7 @@ public class WebScraper {
 	}
 	
 	public String getConnection(String url) throws IllegalArgumentException {
-        Connection conn = Jsoup.connect(url).ignoreContentType(true).userAgent(userAgent).referrer(referrer).timeout(12000).followRedirects(true);//5.0 (Windows NT 6.1; Win64; x64; rv:25.0) Gecko/20100101 Firefox/25.0")
+        Connection conn = Jsoup.connect(url).ignoreContentType(true).userAgent(userAgent).referrer(referrer).timeout(12000).followRedirects(true);
         String out;
         try {
             Response resp = conn.execute();
@@ -47,12 +45,12 @@ public class WebScraper {
                 System.out.println("Error: " + resp.statusCode());
                 out = "connection error";
             }else{	
-                System.out.println("Downloading " + url + " html");
+                System.out.println("Downloading html from " + url);
                 String html = conn.get().html();
                 out = html;
             }   
         }catch(IOException e) {
-             System.out.println(Thread.currentThread().getName() + "Cannot connect to  " + url + e);
+             System.out.println(Thread.currentThread().getName() + " cannot connect to " + url + " " + e);
              System.out.println("Cannot connect!");
              out = "connection error";
         }
@@ -68,12 +66,16 @@ public class WebScraper {
 
 	public String runScraper() {
 		Scanner s = new Scanner(System.in);
-		System.out.println("Provide URL (with http prefix!): ");
+		System.out.println("Provide URL: ");
 		boolean done = true;
 		String outParas = null;
 		while(done) {
 			try{
-				String rawHtml = getConnection(s.nextLine());
+				String connection = s.nextLine();
+				if(!connection.contains("http")) { 
+					 connection = "https://" + connection;
+				}
+				String rawHtml = getConnection(connection);
 				String safeHtml = cleanContent(rawHtml, null);
 				outParas = readHtml(safeHtml);
 				System.out.println(outParas);
