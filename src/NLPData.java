@@ -30,7 +30,7 @@ public class NLPData {
 	 * 1. do I need the finally blocks and null initializations for the files?
 	 * 2. when reading in more than one file per method, is it okay if the try/catch covers both at same time but then message cannot
 	 * say which file specifically wasn't read properly
-	 * 3. must I add all instance variables to the constructor?
+	 * 
 	 */
 	/**
 	 * Some definitions:
@@ -61,25 +61,17 @@ public class NLPData {
 	private ArrayList<String> peopleInArticleArrayList;
 	private List<Map.Entry<String, Long>> topPeopleToCountList;
 	String[] sentences = null;
-
-	//to be used in potential future iterations
-//	/**
-//	 * Constructor takes in a String array which is the cleaned text output from the webpage scraping
-//	 * of the user's URL input.
-//	 * @param userWords
-//	 */
-//	public NLPData(String userWords) {
-//		this.userWords = userWords;
-//
-//	}
+	private sentimentAnalysis sA;
 
 	/**
-	 * Constructor
+	 * Constructor that creates an instance of the web scraper and sentiment analysis classes
 	 */
 	public NLPData() {
 		WebScraper webscraper = new WebScraper();
 		String out = webscraper.runScraper();
 		userWords = out;
+
+		sA = new sentimentAnalysis(tokenToCountMap);
 	}
 
 	/**
@@ -482,7 +474,7 @@ public class NLPData {
 		nlp.findTopPeople();
 		nlp.sentenceDetector();
 
-		sentimentAnalysis sA = new sentimentAnalysis(nlp.getTokenToCountMap());
+//		sentimentAnalysis sA = new sentimentAnalysis(nlp.getTokenToCountMap());
 	}
 
 }
