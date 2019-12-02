@@ -1,4 +1,5 @@
 
+
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -71,6 +72,7 @@ public class Summarizer {
 		}
 //		ArrayList<String> sentenceList = sentenceBuilder.getSentenceObjects();
 //		ArrayList<Word> wordList = WordBuilder.getMaxWordList();
+		
 		StringBuilder textSummary = new StringBuilder();
 		for (int i = 0; i < userWords.length(); i++) {
 			int index = userWords.get(i).getBelongingSentenceNo();

@@ -23,7 +23,7 @@ class POSTagTest {
 			POSModel posModel = new POSModel(posModelIn);
 			// initializing the parts-of-speech tagger with model
 			POSTaggerME posTagger = new POSTaggerME(posModel);
-			// Tagger tagging the tokens
+			// Tagger tagging the Tokens
 			tagsArray = posTagger.tag(tokens);
 		} catch (FileNotFoundException e) {
 			// TODO Auto-generated catch block
@@ -37,7 +37,7 @@ class POSTagTest {
 
 		String[] expectedAnswer = {"NNP", "VBZ", "DT", "NN", "VBN", "NNP", "."};
 //		SimpleTokenizer tokenizer = SimpleTokenizer.INSTANCE;
-//		String[] tokens = tokenizer.tokenize("John has a sister named Penny.");
+//		String[] Tokens = tokenizer.tokenize("John has a sister named Penny.");
 //
 //		InputStream inputStreamPOSTagger = getClass()
 //				.getResourceAsStream("/models/en-pos-maxent.bin");
@@ -45,7 +45,7 @@ class POSTagTest {
 //		try {
 //			posModel = new POSModel(inputStreamPOSTagger);
 //			POSTaggerME posTagger = new POSTaggerME(posModel);
-//			String tags[] = posTagger.tag(tokens);
+//			String tags[] = posTagger.tag(Tokens);
 //		} catch (IOException e) {
 //			System.out.println("Files not found!");
 //			e.printStackTrace();

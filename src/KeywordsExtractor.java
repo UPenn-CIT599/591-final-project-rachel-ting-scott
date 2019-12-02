@@ -76,7 +76,7 @@ public class KeywordsExtractor {
             tokenStream = new PorterStemFilter(stdToken);
             tokenStream.reset();
 
-            // eliminate duplicate tokens by adding them to a set
+            // eliminate duplicate Tokens by adding them to a set
             Set<String> stems = new HashSet<>();
 
             CharTermAttribute token = tokenStream.getAttribute(CharTermAttribute.class);

@@ -17,6 +17,8 @@ import opennlp.tools.namefind.NameFinderME;
 import opennlp.tools.namefind.TokenNameFinderModel;
 import opennlp.tools.postag.POSModel;
 import opennlp.tools.postag.POSTaggerME;
+import opennlp.tools.sentdetect.SentenceDetectorME;
+import opennlp.tools.sentdetect.SentenceModel;
 import opennlp.tools.tokenize.Tokenizer;
 import opennlp.tools.tokenize.TokenizerME;
 import opennlp.tools.tokenize.TokenizerModel;
@@ -37,7 +39,7 @@ public class NLPData {
 	 * POS = parts of speech (ex: noun, verb, adv, etc)
 	 * lemma = the base form of a word in the dictionary form (ex: words --> word, types --> type)
 	 * This class uses Apache OpenNLP to take in a String of text as input from the WebScraper class, tokenize it, remove stop words, 
-	 * count the frequency of each token (for the purpose of the sentiment analysis), lemmatize the tokens, 
+	 * count the frequency of each token (for the purpose of the sentiment analysis), lemmatize the Tokens, 
 	 * store those in a hashmap and pull out the top n content words for output,
 	 * extract the names of people and store those in a hashmap and pull out the top n people mentioned for output
 	 * In learning how to use OpenNLP methods and pre-trained models, tutorials from www.tutorialkart.com were used
@@ -58,6 +60,7 @@ public class NLPData {
 	private List<Map.Entry<String, Long>> topLemmaToCountList;
 	private ArrayList<String> peopleInArticleArrayList;
 	private List<Map.Entry<String, Long>> topPeopleToCountList;
+	String[] sentences = null;
 
 	//to be used in potential future iterations
 //	/**
@@ -81,17 +84,17 @@ public class NLPData {
 
 	/**
 	 * Helper method that takes the String of web page text, tokenizes it, and removes the stop words
-	 * @return ArrayList<String> - the tokens (of just content words) of the web page text
+	 * @return ArrayList<String> - the Tokens (of just content words) of the web page text
 	 */
 	public ArrayList<String> tokenizer(String str) {
 		try {
-			//reading OpenNLP tokens model to a stream
+			//reading OpenNLP Tokens model to a stream
 			tokenModelIn = new FileInputStream("en-token.bin");
-			//loading OpenNLP tokens model from stream
+			//loading OpenNLP Tokens model from stream
 			TokenizerModel tokenModel = new TokenizerModel(tokenModelIn);
 			//initializing the tokenizer with OpenNLP pre-trained model
 			Tokenizer tokenizer = new TokenizerME(tokenModel);
-			//OpenNLP tokenize method for creating the tokens and storing them in a String[]
+			//OpenNLP tokenize method for creating the Tokens and storing them in a String[]
 			String[] tokensArray = tokenizer.tokenize(str.toLowerCase());
 			tokenArrayList = new ArrayList<String>();
 			for(String token : tokensArray) {
@@ -142,7 +145,7 @@ public class NLPData {
 	}
 
 	/**
-	 * Grabs all the tokens; counts their frequency; stores those key-value pairs in a HashMap
+	 * Grabs all the Tokens; counts their frequency; stores those key-value pairs in a HashMap
 	 * @return tokenToCountMap
 	 */
 	public HashMap<String, Integer> createTokenToCountMap() {	
@@ -169,7 +172,7 @@ public class NLPData {
 	}
 
 	/**
-	 * Takes tokens array list and tags each token for POS to then returns an array list of the lemmas of each content word.
+	 * Takes Tokens array list and tags each token for POS to then returns an array list of the lemmas of each content word.
 	 * The lemmas are used for outputting the most frequent content words of the web page. 
 	 * @return lemmaArrayList an array list of lemmas (of content words only)
 	 */
@@ -183,7 +186,7 @@ public class NLPData {
 			POSModel posModel = new POSModel(posModelIn);
 			//initializing the parts-of-speech tagger with OpenNLP pre-trained model
 			POSTaggerME posTagger = new POSTaggerME(posModel);
-			//OpenNLP tag method for tagging the tokens (which takes in array, thus the conversion from array list to array
+			//OpenNLP tag method for tagging the Tokens (which takes in array, thus the conversion from array list to array
 			String[] tempTokensArray = new String[tempTokensArrayList.size()]; 
 			tempTokensArray = tempTokensArrayList.toArray(tempTokensArray); 			
 			String[] tags = posTagger.tag(tempTokensArray);
@@ -294,8 +297,8 @@ public class NLPData {
 //	            // s.getStart() : contains the start index of possible name in the input string array
 //	            // s.getEnd() : contains the end index of the possible name in the input string array
 //	            for(int i = s.getStart(); i <s.getEnd(); i++){
-//	            	idk = tokens[i];
-//	                System.out.print(tokens[i] + " ");
+//	            	idk = Tokens[i];
+//	                System.out.print(Tokens[i] + " ");
 //	            }
 //	            
 //	            idklist.add(idk);
@@ -369,6 +372,33 @@ public class NLPData {
 		return topPeopleToCountList;
 
 	}
+	
+	/**
+	 * This method is used to detect sentences in a paragraph/string
+	 */
+	public String[] sentenceDetector() {		
+		try {
+		InputStream sentenceModelIn = new FileInputStream("en-sent.bin");
+		SentenceModel sentenceModel = new SentenceModel(sentenceModelIn);
+
+		//feed the model to SentenceDetectorME class
+		SentenceDetectorME sentenceDetector = new SentenceDetectorME(sentenceModel);
+
+		//detect sentences in the paragraph
+		sentences = sentenceDetector.sentDetect(userWords);
+
+		//TESTING - print sentences detected
+		System.out.println();
+		System.out.println("-----Individual sentences from the web page-----");
+		for(int i = 0; i < sentences.length; i++){
+			System.out.println(sentences[i]);
+		}
+		sentenceModelIn.close();
+		} catch (IOException e) {
+			System.out.println("Sentence Detector Model not loading properly.");
+		}
+		return sentences;
+	}
 
 	/**
 	 * Getter method for userWords
@@ -433,6 +463,14 @@ public class NLPData {
 	public HashMap<String, Integer> getTokenToCountMap() {
 		return tokenToCountMap;
 	}
+	
+	/**
+	 * Getter method for sentences
+	 * @return sentences
+	 */
+	public String[] getSentences() {
+		return sentences;
+	}
 
 	public static void main(String args[]) {
 		NLPData nlp = new NLPData();
@@ -442,6 +480,7 @@ public class NLPData {
 		nlp.findTopLemma();
 		nlp.findPeople();
 		nlp.findTopPeople();
+		nlp.sentenceDetector();
 
 		sentimentAnalysis sA = new sentimentAnalysis(nlp.getTokenToCountMap());
 	}

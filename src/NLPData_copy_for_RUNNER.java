@@ -81,11 +81,11 @@ public class NLPData_copy_for_RUNNER {
 
 	/**
 	 * Helper method that takes the String of user's text and tokenizes them
-	 * @return String[] of the tokens of the user's text
+	 * @return String[] of the Tokens of the user's text
 	 */
 	public ArrayList<String> tokenizer(String str) {
 		try {
-			//reading OpenNLP tokens model to a stream
+			//reading OpenNLP Tokens model to a stream
 			tokenModelIn = new FileInputStream("en-token.bin");
 			TokenizerModel tokenModel = new TokenizerModel(tokenModelIn);
 			Tokenizer tokenizer = new TokenizerME(tokenModel);
@@ -139,7 +139,7 @@ public class NLPData_copy_for_RUNNER {
 	}
 
 	/**
-	 * Grabs all the tokens; counts their frequency; stores those key-value pairs in a HashMap
+	 * Grabs all the Tokens; counts their frequency; stores those key-value pairs in a HashMap
 	 * @return lemmaToCountMap
 	 */
 	public HashMap<String, Integer> createTokenToCountMap() {	
@@ -166,7 +166,7 @@ public class NLPData_copy_for_RUNNER {
 	}
 
 	/**
-	 * Takes tokens ArrayList and tags each token for POS to then 
+	 * Takes Tokens ArrayList and tags each token for POS to then 
 	 * return an arraylist of the lemmas of each word, excluding custom, pre-defined stop words.
 	 * The lemmas are used for more accurate keyword tagging in the KeywordAnalysis class.
 	 * @return arraylist of lemmas (not including custom, pre-defined stop words
@@ -182,7 +182,7 @@ public class NLPData_copy_for_RUNNER {
 			POSModel posModel = new POSModel(posModelIn);
 			// initializing the parts-of-speech tagger with model
 			POSTaggerME posTagger = new POSTaggerME(posModel);
-			// OpenNLP Tag method for tagging the tokens (which takes in array, thus the conversion from array list to array
+			// OpenNLP Tag method for tagging the Tokens (which takes in array, thus the conversion from array list to array
 			String[] tempTokensArray = new String[tempTokensArrayList.size()]; 
 			tempTokensArray = tempTokensArrayList.toArray(tempTokensArray); 			
 			String[] tags = posTagger.tag(tempTokensArray);
@@ -290,8 +290,8 @@ public class NLPData_copy_for_RUNNER {
 //	            // s.getStart() : contains the start index of possible name in the input string array
 //	            // s.getEnd() : contains the end index of the possible name in the input string array
 //	            for(int i = s.getStart(); i <s.getEnd(); i++){
-//	            	idk = tokens[i];
-//	                System.out.print(tokens[i] + " ");
+//	            	idk = Tokens[i];
+//	                System.out.print(Tokens[i] + " ");
 //	            }
 //	            
 //	            idklist.add(idk);
