@@ -578,6 +578,11 @@ yourselves
 you've
 z
 zero
+'m
+'re
+'s
+'ve
+'d
 ~
 `
 !
@@ -595,6 +600,8 @@ _
 =
 ,
 .
+..
+...
 /
 ?
 ;
