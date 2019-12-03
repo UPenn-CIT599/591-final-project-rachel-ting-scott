@@ -30,7 +30,8 @@ public class NLPData {
 	 * 1. do I need the finally blocks and null initializations for the files?
 	 * 2. when reading in more than one file per method, is it okay if the try/catch covers both at same time but then message cannot
 	 * say which file specifically wasn't read properly
-	 * 
+	 * 3. List
+	 * 4. String tokens[] equals String[] tokens ??
 	 */
 	/**
 	 * Some definitions:
@@ -67,10 +68,16 @@ public class NLPData {
 	 * Constructor that creates an instance of the web scraper and sentiment analysis classes
 	 */
 	public NLPData() {
-		WebScraper webscraper = new WebScraper();
-		String out = webscraper.runScraper();
-		userWords = out;
-
+		//put the try/catch/finally for reading models and files into the constructor
+				
+		//MOVED TO tokenizer method
+//		WebScraper webscraper = new WebScraper();
+//		String out = webscraper.runScraper();
+//		userWords = out;
+		
+//instantiate this variable in this method and then put the completed tokenToCount map as parameter once the method has run
+		//as a global variable it'll get updated once the method is run, so perhaps delete the parameter as long as the sA is run after the 
+		//create tokenToCountMap method is run
 //		sA = new sentimentAnalysis(tokenToCountMap);
 	}
 
@@ -79,6 +86,10 @@ public class NLPData {
 	 * @return ArrayList<String> - the Tokens (of just content words) of the web page text
 	 */
 	public ArrayList<String> tokenizer(String str) {
+		WebScraper webscraper = new WebScraper();
+		String out = webscraper.runScraper();
+		userWords = out;
+		
 		try {
 			//reading OpenNLP Tokens model to a stream
 			tokenModelIn = new FileInputStream("en-token.bin");
@@ -87,7 +98,7 @@ public class NLPData {
 			//initializing the tokenizer with OpenNLP pre-trained model
 			Tokenizer tokenizer = new TokenizerME(tokenModel);
 			//OpenNLP tokenize method for creating the Tokens and storing them in a String[]
-			String[] tokensArray = tokenizer.tokenize(str.toLowerCase());
+			String[] tokensArray = tokenizer.tokenize(userWords.toLowerCase());
 			tokenArrayList = new ArrayList<String>();
 			for(String token : tokensArray) {
 				tokenArrayList.add(token);
@@ -141,9 +152,11 @@ public class NLPData {
 	 * @return tokenToCountMap
 	 */
 	public HashMap<String, Integer> createTokenToCountMap() {	
-		ArrayList<String> tempTokens = tokenizer(userWords);
+//		ArrayList<String> tempTokenArrayList = tokenizer(userWords);
+		ArrayList<String> tempTokenArrayList = getTokenArrayList();
+
 		tokenToCountMap = new HashMap<>();
-		for (String str : tempTokens) {
+		for (String str : tempTokenArrayList) {
 			if (tokenToCountMap.containsKey(str)) {
 				int tempCount = tokenToCountMap.get(str);
 				tempCount++;
@@ -159,7 +172,8 @@ public class NLPData {
 
 		//TESTING
 		System.out.println();
-		System.out.println("tokenToCountMap: " + tokenToCountMap);
+//		System.out.println("tokenToCountMap: " + tokenToCountMap);
+		sA = new sentimentAnalysis(tokenToCountMap);
 		return tokenToCountMap;
 	}
 
@@ -169,7 +183,8 @@ public class NLPData {
 	 * @return lemmaArrayList an array list of lemmas (of content words only)
 	 */
 	public ArrayList<String> lemmatizer() {
-		ArrayList<String> tempTokensArrayList = tokenizer(userWords);
+		ArrayList<String> tempTokenArrayList = tokenizer(userWords);
+//		ArrayList<String> tempTokenArrayList = getTokenArrayList();
 
 		try {
 			//reading OpenNLP parts-of-speech model to a stream
@@ -179,8 +194,8 @@ public class NLPData {
 			//initializing the parts-of-speech tagger with OpenNLP pre-trained model
 			POSTaggerME posTagger = new POSTaggerME(posModel);
 			//OpenNLP tag method for tagging the Tokens (which takes in array, thus the conversion from array list to array
-			String[] tempTokensArray = new String[tempTokensArrayList.size()]; 
-			tempTokensArray = tempTokensArrayList.toArray(tempTokensArray); 			
+			String[] tempTokensArray = new String[tempTokenArrayList.size()]; 
+			tempTokensArray = tempTokenArrayList.toArray(tempTokensArray); 			
 			String[] tags = posTagger.tag(tempTokensArray);
 
 			//loading the dictionary to input stream
@@ -212,7 +227,7 @@ public class NLPData {
 			System.out.println("Lemma dictionary file not found.");
 			e.printStackTrace();
 		} catch (IOException e) {
-			System.out.println("POS model did not load properly.");
+			System.out.println("Something went wrong.");
 			e.printStackTrace();
 		}
 		finally {
@@ -322,7 +337,8 @@ public class NLPData {
 			}
 
 		} catch (IOException e) {
-			System.out.println("Either Token Model or Named Entity Recognition - Person Model did not load properly.");
+			System.out.println("Oops, something went wrong. Check that all the files are properly included.");
+			e.printStackTrace();
 		}
 		finally {
 			if (tokenModelIn != null) {
@@ -366,6 +382,7 @@ public class NLPData {
 	}
 	
 	/**
+	 * Add note that this code for the future --what is does? why is it here? what is the plan for it?
 	 * This method is used to detect sentences in a paragraph/string
 	 */
 	public String[] sentenceDetector() {		
@@ -466,15 +483,13 @@ public class NLPData {
 
 	public static void main(String args[]) {
 		NLPData nlp = new NLPData();
-
-		nlp.createTokenToCountMap();
 		nlp.lemmatizer();
 		nlp.findTopLemma();
 		nlp.findPeople();
 		nlp.findTopPeople();
+		nlp.createTokenToCountMap();
 		nlp.sentenceDetector();
 
-//		sentimentAnalysis sA = new sentimentAnalysis(nlp.getTokenToCountMap());
 	}
 
 }
