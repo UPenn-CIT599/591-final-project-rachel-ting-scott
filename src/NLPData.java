@@ -53,7 +53,7 @@ public class NLPData {
 
 	//Just use the following String variable when not connected to WebScraper.java
 	//private String userWords = "The story goes like this. ADD MORE :)";	
-	private ArrayList<String> stopWordsArrayList;
+	private ArrayList<String> stopWordsArrayList = new ArrayList<String>();
 	private ArrayList<String> tokenArrayList;
 	private ArrayList<String> lemmaArrayList;
 	private HashMap<String, Integer> tokenToCountMap;
@@ -71,7 +71,7 @@ public class NLPData {
 		String out = webscraper.runScraper();
 		userWords = out;
 
-		sA = new sentimentAnalysis(tokenToCountMap);
+//		sA = new sentimentAnalysis(tokenToCountMap);
 	}
 
 	/**
@@ -113,7 +113,6 @@ public class NLPData {
 			Scanner sc = new Scanner(readStopWords);
 			while (sc.hasNext()) {
 				String stopWord = sc.next();
-				stopWordsArrayList = new ArrayList<String>();
 				stopWordsArrayList.add(stopWord);
 			}
 			sc.close();
@@ -132,7 +131,8 @@ public class NLPData {
 			}
 		}
 		tokenArrayList.removeAll(stopWordsArrayList);
-		System.out.println(tokenArrayList);
+		//TESTING
+//		System.out.println("Tokens Array List: " + tokenArrayList);
 		return tokenArrayList;
 	}
 
