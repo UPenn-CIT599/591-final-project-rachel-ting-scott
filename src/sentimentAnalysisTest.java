@@ -5,7 +5,19 @@ import java.util.HashMap;
 import org.junit.jupiter.api.Test;
 
 class sentimentAnalysisTest {
-
+	
+	
+	
+	@Test
+	void testScoreCounter() {
+		HashMap<String, Integer> trialMap = new HashMap<>();
+		trialMap.put("abnormal", 1);
+		trialMap.put("acclaim", 2);
+		sentimentAnalysis sA = new sentimentAnalysis(trialMap);
+		int result = 1;
+		assertEquals(result,sA.getScoreOutput());
+	}
+	
 	@Test
 	void testGetNegativeWordCount() {
 		HashMap<String, Integer> trialMap = new HashMap<>();
