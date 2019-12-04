@@ -1,3 +1,4 @@
+import static org.junit.Assert.assertEquals;
 import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.Test;
 
@@ -49,11 +50,12 @@ class NLPDataTest {
 	 * Tests tokenizer method with a short string.
 	 */
 	@Test
-	void testTokenizer1() {
+	void testTokenizer() {
 		String str = "This is a test string. This is testing the tokenizer method.";
 		NLPData nlp = new NLPData(str);	
+		nlp.tokenizer(str);
 		ArrayList<String> expectedAnswer = new ArrayList<String>(Arrays.asList("test", "string", "testing", "tokenizer", "method"));
-		assertEquals(expectedAnswer, nlp.tokenizer(str));
+		assertEquals(expectedAnswer, nlp.getTokenArrayList());
 	}
 	
 	/**
@@ -63,8 +65,9 @@ class NLPDataTest {
 	void testTokenizer2() {
 		String str = "Now, I'm trying more punctuation! And just different words in general...";	
 		NLPData nlp = new NLPData(str);
+		nlp.tokenizer(str);
 		ArrayList<String> expectedAnswer = new ArrayList<String>(Arrays.asList("punctuation", "words", "general"));
-		assertEquals(expectedAnswer, nlp.tokenizer(str));
+		assertEquals(expectedAnswer, nlp.getTokenArrayList());
 	}
 	
 	/**
@@ -73,7 +76,8 @@ class NLPDataTest {
 	@Test
 	void testTokenizerPara() {
 		NLPData nlp = new NLPData(testStr);
-		assertEquals(testTokens, nlp.tokenizer(testStr));
+		nlp.tokenizer(testStr);
+		assertEquals(testTokens, nlp.getTokenArrayList());
 	}
 
 	/**
@@ -97,7 +101,8 @@ class NLPDataTest {
 				expectedAnswer.put(str, 1);
 			}
 		}
-		assertEquals(expectedAnswer, nlp.createTokenToCountMap(testTokens));
+		nlp.createTokenToCountMap(testTokens);
+		assertEquals(expectedAnswer, nlp.getTokenToCountMap());
 	}
 
 	/**
@@ -112,8 +117,8 @@ class NLPDataTest {
 		NLPData nlp = new NLPData(testStr);
 		ArrayList<String> expectedAnswer = new ArrayList<String>(Arrays.asList("house", "move", "week", "intelligence", "committee",
 				"consideration", "judiciary", "committee", "white", "house", "trump", "intend", "participate", "hear"));
-		
-		assertEquals(expectedAnswer, nlp.lemmatizer(testTokens));
+		nlp.lemmatizer(testTokens);
+		assertEquals(expectedAnswer, nlp.getLemmaArrayList());
 	}
 	
 	/**
@@ -141,8 +146,8 @@ class NLPDataTest {
 				"buildings", "bans", "dangerous", "unusual", "weapons", "difference", "justice", "court", "insisted", "limiting", 
 				"language", "retired", "replaced", "justice", "lower", "court", "judge", "wrote", "favor", "expansive", "gun",
 				"rights", "think", "difference", "justice", "court", "gun", "owner's"));
-				
-		assertEquals(expectedAnswer, nlp.lemmatizer(testParaTokens));
+		nlp.lemmatizer(testParaTokens);		
+		assertEquals(expectedAnswer, nlp.getLemmaArrayList());
 	}
 
 	/**
@@ -160,8 +165,8 @@ class NLPDataTest {
 
 		expectedAnswerList = tempMap.entrySet().stream().sorted(Map.Entry.comparingByValue(Comparator.reverseOrder()))
 				.limit(5).collect(Collectors.toList());
-		
-		assertEquals(expectedAnswerList, nlp.findTopLemma(topLemma));
+		nlp.findTopLemma(topLemma);
+		assertEquals(expectedAnswerList, nlp.getTopLemmaToCountList());
 	}
 
 	/**
@@ -176,8 +181,8 @@ class NLPDataTest {
 				"Kennedy", "Brett", "Kavanaugh", "Kavanaugh", "Kavanaugh", "Clement"));
 		//this was the answer: [Antonin, Scalia, But, Brett] --> Kennedy and Kavanaugh are not being recognized
 		ArrayList<String> expectedAnswer2 = new ArrayList<String>(Arrays.asList("Antonin", "Scalia", "Brett"));
-		
-		assertEquals(expectedAnswer2, nlp.findPeople());
+		nlp.findPeople();
+		assertEquals(expectedAnswer2, nlp.getPeopleInArticleArrayList());
 	}
 
 	/**
@@ -194,8 +199,8 @@ class NLPDataTest {
 
 		expectedAnswerList = tempMap.entrySet().stream().sorted(Map.Entry.comparingByValue(Comparator.reverseOrder()))
 				.limit(3).collect(Collectors.toList());
-		
-		assertEquals(expectedAnswerList, nlp.findTopPeople(allPeople));
+		nlp.findTopPeople(allPeople);
+		assertEquals(expectedAnswerList, nlp.getTopPeopleToCountList());
 
 	}
 
@@ -208,7 +213,7 @@ class NLPDataTest {
 		
 		String[] expectedAnswer = new String[] {"What did the Supreme Court mean in its 2008 decision when it said that the "
 				+ "right to bear arms is an individual right?"};
-		assertEquals(expectedAnswer[0], nlp.sentenceDetector());
+		assertEquals(expectedAnswer[0], nlp.getTitleOrFirstSentence());
 	}
 
 }
