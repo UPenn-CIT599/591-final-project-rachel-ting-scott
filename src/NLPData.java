@@ -40,9 +40,15 @@ import opennlp.tools.util.Span;
 public class NLPData {
 	private String webPageText;
 	private InputStream tokenModelIn;
+	private Tokenizer tokenizer;
 	private InputStream posModelIn;
+	private POSTaggerME posTagger;
 	private InputStream dictLemmatizer;
+	private DictionaryLemmatizer lemmatizer;
+	private NameFinderME nameFinder;
 	private InputStream entityModelIn;
+	private InputStream sentenceModelIn;
+	private SentenceDetectorME sentenceDetector;
 
 	//Just use for TESTING when not connected to WebScraper or Runner
 	//private String webPageText = "The story goes like this. ADD MORE :)";	
@@ -54,19 +60,16 @@ public class NLPData {
 	private ArrayList<String> peopleInArticleArrayList;
 	private List<Map.Entry<String, Long>> topPeopleToCountList;
 	String[] sentences;
-	
+
 	private sentimentAnalysis sA;
 
 	/**
-	 * Constructor that creates an instance of the web scraper and sentiment analysis classes
+	 * Constructor that initializes the instance variables and reads in the required trained models and files to run the methods
 	 */
 	public NLPData(String text) {
 		this.webPageText = text;
-		tokenModelIn = null;
-		posModelIn = null;
-		dictLemmatizer = null;
 		entityModelIn = null;
-		
+
 		stopWordsArrayList = new ArrayList<String>();
 		tokenArrayList = new ArrayList<String>();
 		lemmaArrayList = new ArrayList<String>();
@@ -75,51 +78,10 @@ public class NLPData {
 		peopleInArticleArrayList  = new ArrayList<String>();
 		topPeopleToCountList = null;
 		sentences = null;
-		
+
 		sA = null;
 
-		//put the try/catch/finally for reading models and files into the constructor
-
-	}
-
-	/**
-	 * Helper method that takes the String of web page text, tokenizes it, and removes the stop words
-	 * @return ArrayList<String> - the Tokens (of just content words) of the web page text
-	 */
-	public ArrayList<String> tokenizer(String str) {
-		//Just use when TESTING with webscaper and not runner
-//		WebScraper webscraper = new WebScraper();
-//		String out = webscraper.runScraper();
-//		webPageText = out;
-		
-		try {
-			//reading OpenNLP Tokens model to a stream
-			tokenModelIn = new FileInputStream("en-token.bin");
-			//loading OpenNLP Tokens model from stream
-			TokenizerModel tokenModel = new TokenizerModel(tokenModelIn);
-			//initializing the tokenizer with OpenNLP pre-trained model
-			Tokenizer tokenizer = new TokenizerME(tokenModel);
-			//OpenNLP tokenize method for creating the Tokens and storing them in a String[]
-			String[] tokensArray = tokenizer.tokenize(str.toLowerCase());
-			for(String token : tokensArray) {
-				tokenArrayList.add(token);
-			}
-
-			//use when not connected to WebScraper.java
-			//			tokensArray = tokenizer.tokenize(webPageText.toLowerCase());
-			//			//TESTING
-			//			System.out.println("tokensArray:");
-			//			for (String element : tokensArray) {
-			//				System.out.print(element + "\t");
-			//			}
-
-		} catch (IOException e) {
-			//Model loading failed, handle the error
-			System.out.println("Tokens model did not load properly.");
-			e.printStackTrace();
-		} 
-
-		//remove stop word from webPageText using the stop-words-en.txt list of custom stop words
+		//try-catch for Files
 		try {
 			File readStopWords = new File("stop-words-en.txt");
 			Scanner sc = new Scanner(readStopWords);
@@ -128,11 +90,51 @@ public class NLPData {
 				stopWordsArrayList.add(stopWord);
 			}
 			sc.close();
-		} catch (FileNotFoundException e) {
-			System.out.println("Stop Word file is not found.");
-			e.printStackTrace();
-		}
+			//loading the Apache OpenNLP lemma dictionary to input stream
+			dictLemmatizer = new FileInputStream("en-lemmatizer.dict");
 
+		} catch (FileNotFoundException e) {
+			System.out.println("Oops. Something went wrong. A required file was not found.");
+			e.printStackTrace();
+		} 
+
+		//try-catch for trained models
+		try {
+			//reading OpenNLP Tokens model to a stream
+			tokenModelIn = new FileInputStream("en-token.bin");
+			//loading OpenNLP Tokens model from the stream
+			TokenizerModel tokenModel = new TokenizerModel(tokenModelIn);
+			//initializing the tokenizer with OpenNLP pre-trained model
+			tokenizer = new TokenizerME(tokenModel);
+
+			//reading OpenNLP parts-of-speech model to a stream
+			posModelIn = new FileInputStream("en-pos-maxent.bin");
+			//loading OpenNLP parts-of-speech model from the stream
+			POSModel posModel = new POSModel(posModelIn);
+			//initializing the parts-of-speech tagger with OpenNLP pre-trained model
+			posTagger = new POSTaggerME(posModel);
+
+			//loading the lemmatizer with dictionary
+			lemmatizer = new DictionaryLemmatizer(dictLemmatizer);
+
+			//reading OpenNLP named entity recognition-person model to a stream
+			entityModelIn = new FileInputStream(new File("en-ner-person.bin"));
+			//loading OpenNLP named entity recognition-person model from the stream
+			TokenNameFinderModel tokenNameFinderModel = new TokenNameFinderModel(entityModelIn);
+			//initializing the name finder with OpenNLP pre-trained model
+			nameFinder = new NameFinderME(tokenNameFinderModel);
+
+			//reading OpenNLP sentence detection model to a stream
+			sentenceModelIn = new FileInputStream("en-sent.bin");
+			//loading OpenNLP sentence model from the stream
+			SentenceModel sentenceModel = new SentenceModel(sentenceModelIn);
+			//initializing the sentence detector with OpenNLP pre-trained model
+			sentenceDetector = new SentenceDetectorME(sentenceModel);
+
+		} catch (IOException e) {
+			System.out.println("Oops. Something went wrong. A model did not properly load.");
+			e.printStackTrace();
+		} 
 		finally {
 			if (tokenModelIn != null) {
 				try {
@@ -141,10 +143,58 @@ public class NLPData {
 				catch (IOException e) {
 				}
 			}
+			if (posModelIn != null) {
+				try {
+					posModelIn.close();
+				}
+				catch (IOException e) {
+				}
+			}
+			if (dictLemmatizer != null) {
+				try {
+					dictLemmatizer.close();
+				}
+				catch (IOException e) {
+				}
+			}
+			if (entityModelIn != null) {
+				try {
+					entityModelIn.close();
+				}
+				catch (IOException e) {
+
+				}
+			}
+			if (sentenceModelIn != null) {
+				try {
+					sentenceModelIn.close();
+				}
+				catch (IOException e) {
+
+				}
+			}
 		}
+	}
+
+	/**
+	 * Helper method that takes the String of web page text, tokenizes it, and removes the stop words
+	 * @return ArrayList<String> - the Tokens (of just content words) of the web page text
+	 */
+	public ArrayList<String> tokenizer(String str) {
+		//Just use when TESTING with webscaper and not runner
+		//		WebScraper webscraper = new WebScraper();
+		//		String out = webscraper.runScraper();
+		//		webPageText = out;
+
+		//OpenNLP tokenize method for creating the Tokens and storing them in a String[]
+		String[] tokensArray = tokenizer.tokenize(str.toLowerCase());
+		for(String token : tokensArray) {
+			tokenArrayList.add(token);
+		}
+
 		tokenArrayList.removeAll(stopWordsArrayList);
 		//TESTING
-//		System.out.println("Tokens Array List: " + tokenArrayList);
+		//		System.out.println("Tokens Array List: " + tokenArrayList);
 		return tokenArrayList;
 	}
 
@@ -153,9 +203,9 @@ public class NLPData {
 	 * @return tokenToCountMap
 	 */
 	public HashMap<String, Integer> createTokenToCountMap(ArrayList<String> cleanTokens) {	
-//		ArrayList<String> tempTokenArrayList = tokenizer(webPageText);
-//		ArrayList<String> tempTokenArrayList = getTokenArrayList();
-		
+		//		ArrayList<String> tempTokenArrayList = tokenizer(webPageText);
+		//		ArrayList<String> tempTokenArrayList = getTokenArrayList();
+
 		for (String str : cleanTokens) {
 			if (tokenToCountMap.containsKey(str)) {
 				int tempCount = tokenToCountMap.get(str);
@@ -169,7 +219,7 @@ public class NLPData {
 
 		//TESTING
 		System.out.println();
-//		System.out.println("tokenToCountMap: " + tokenToCountMap);
+		//		System.out.println("tokenToCountMap: " + tokenToCountMap);
 		sA = new sentimentAnalysis(tokenToCountMap);
 		return tokenToCountMap;
 	}
@@ -179,71 +229,34 @@ public class NLPData {
 	 * The lemmas are used for outputting the most frequent content words of the web page. 
 	 * @return lemmaArrayList an array list of lemmas (of content words only)
 	 */
-//	public ArrayList<String> lemmatizer() {
+	//	public ArrayList<String> lemmatizer() {
 	public ArrayList<String> lemmatizer(ArrayList<String> cleanTokens) {
-//		ArrayList<String> tempTokenArrayList = tokenizer(webPageText);
-//		ArrayList<String> tempTokenArrayList = getTokenArrayList();
+		//		ArrayList<String> tempTokenArrayList = tokenizer(webPageText);
+		//		ArrayList<String> tempTokenArrayList = getTokenArrayList();
 
-		try {
-			//reading OpenNLP parts-of-speech model to a stream
-			posModelIn = new FileInputStream("en-pos-maxent.bin");
-			//loading OpenNLP parts-of-speech model from stream
-			POSModel posModel = new POSModel(posModelIn);
-			//initializing the parts-of-speech tagger with OpenNLP pre-trained model
-			POSTaggerME posTagger = new POSTaggerME(posModel);
-			
-			//OpenNLP tag method for tagging the Tokens (which takes in array, thus the conversion from array list to array
-			String[] tempTokensArray = new String[cleanTokens.size()]; 
-			tempTokensArray = cleanTokens.toArray(tempTokensArray);
-			String[] tags = posTagger.tag(tempTokensArray);
+		//OpenNLP tag method for tagging the Tokens (which takes in array, thus the conversion from array list to array
+		String[] tempTokensArray = new String[cleanTokens.size()]; 
+		tempTokensArray = cleanTokens.toArray(tempTokensArray);
+		String[] tags = posTagger.tag(tempTokensArray);
 
-			//loading the dictionary to input stream
-			dictLemmatizer = new FileInputStream("en-lemmatizer.dict");
+		//OpenNLP lemmatize method for putting the lemma in a String[]
+		String[] lemmas = lemmatizer.lemmatize(tempTokensArray, tags);
 
-			//loading the lemmatizer with dictionary
-			DictionaryLemmatizer lemmatizer = new DictionaryLemmatizer(dictLemmatizer);
-
-			//OpenNLP lemmatize method for putting the lemma in a String[]
-			String[] lemmas = lemmatizer.lemmatize(tempTokensArray, tags);
-
-			//converting lemmas String[] to array list
-			for(String lemma : lemmas) {
-				if (!lemma.equals("O")) {
-					lemmaArrayList.add(lemma);
-				}
-			}	      
-
-			//TESTING: printing the results
-			//			System.out.println("LEMMALIST: " + lemmaArrayList);
-			//			System.out.println("\nPrinting lemmas for the given sentence...");
-			//			System.out.println("WORD -POSTAG : LEMMA");
-			//			for(int i = 0; i < tempTokens.length; i++){
-			//				System.out.println(tempTokens[i]+" -"+tags[i]+" : "+lemmas[i]);
-			//			}
-		} catch (FileNotFoundException e){
-			System.out.println("Lemma dictionary file not found.");
-			e.printStackTrace();
-		} catch (IOException e) {
-			System.out.println("Something went wrong.");
-			e.printStackTrace();
-		}
-		finally {
-			if (posModelIn != null) {
-				try {
-					posModelIn.close();
-				}
-				catch (IOException e) {
-				}
+		//converting lemmas String[] to array list
+		for(String lemma : lemmas) {
+			if (!lemma.equals("O")) {
+				lemmaArrayList.add(lemma);
 			}
-			if (dictLemmatizer != null) {
-				try {
-					dictLemmatizer.close();
-				}
-				catch (IOException e) {
-					
-				}
-			}
-		}	
+		}	      
+
+		//TESTING: printing the results
+		//			System.out.println("LEMMALIST: " + lemmaArrayList);
+		//			System.out.println("\nPrinting lemmas for the given sentence...");
+		//			System.out.println("WORD -POSTAG : LEMMA");
+		//			for(int i = 0; i < tempTokens.length; i++){
+		//				System.out.println(tempTokens[i]+" -"+tags[i]+" : "+lemmas[i]);
+		//			}
+
 		return lemmaArrayList;
 
 	}
@@ -254,9 +267,9 @@ public class NLPData {
 	 * @return topLemmaToCountList list of top n lemma and their frequency of occurrence
 	 */
 	public List<Entry<String, Long>> findTopLemma(ArrayList<String> cleanLemma) {
-//		Map<String, Long> tempMap = lemmaArrayList.stream()
-//				.collect(Collectors.groupingBy(w -> w, Collectors.counting()));
-		
+		//		Map<String, Long> tempMap = lemmaArrayList.stream()
+		//				.collect(Collectors.groupingBy(w -> w, Collectors.counting()));
+
 		Map<String, Long> tempMap = cleanLemma.stream().collect(Collectors.groupingBy(w -> w, Collectors.counting()));
 
 		topLemmaToCountList = tempMap.entrySet().stream().sorted(Map.Entry.comparingByValue(Comparator.reverseOrder()))
@@ -264,8 +277,8 @@ public class NLPData {
 				.limit(5).collect(Collectors.toList());
 
 		//TESTING
-//		System.out.println();
-//		System.out.println("Top 5 content words in this article: " + topLemmaToCountList);
+		//		System.out.println();
+		//		System.out.println("Top 5 content words in this article: " + topLemmaToCountList);
 		return topLemmaToCountList;
 	}
 
@@ -283,42 +296,17 @@ public class NLPData {
 			TokenNameFinderModel tokenNameFinderModel = new TokenNameFinderModel(entityModelIn);
 			NameFinderME nameFinderME = new NameFinderME(tokenNameFinderModel);
 
-			String text = webPageText;
+			String text = getWebPageText();
 			String tokens[] = tokenizer.tokenize(text);
 			Span nameSpans[] = nameFinderME.find(tokens);
-			
-			/*
-			 * TRYING to get full names out -- 
-			 * but it's still hard/inaccurate anyway because "Elizabeth Warren" and "Warren" get counted separately but
-			 * it's typical to have the two used interchangeably
-			 */
-//			ArrayList<String> idklist = new ArrayList<>();
-//			String idk = "";
-//			for(Span s: nameSpans){
-////	            System.out.print(s.toString());
-//	            System.out.print("  :  ");
-//	            // s.getStart() : contains the start index of possible name in the input string array
-//	            // s.getEnd() : contains the end index of the possible name in the input string array
-//	            for(int i = s.getStart(); i <s.getEnd(); i++){
-//	            	idk = Tokens[i];
-//	                System.out.print(Tokens[i] + " ");
-//	            }
-//	            
-//	            idklist.add(idk);
-//	            System.out.println("IDK: ");
-//	            for (String idkstr : idklist) {
-//	            	System.out.println(idkstr);
-//	            }
-//	            
-//			}
-			
+
 			for (int i = 0; i < nameSpans.length; i++) {
 				String name = tokens[nameSpans[i].getStart()];
 				/*
 				 * Since 'The', 'I', and 'But' are commonly the first word of a sentence (and for 'The' - thus capitalized), the NER-Person Model
 				 * includes them as people's names, so removing here increases the accuracy of this method.
 				 */				
-				if (!name.equals("The") && (!name.equals("I"))) {
+				if (!name.equals("The") && (!name.equals("I")) && (!name.equals("But"))) {
 					peopleInArticleArrayList.add(name);
 				}
 			}			
@@ -333,7 +321,7 @@ public class NLPData {
 			}
 
 		} catch (IOException e) {
-			System.out.println("Oops, something went wrong. Check that all the files are properly included.");
+			System.out.println("Oops, something went wrong. Models didn't load.");
 			e.printStackTrace();
 		}
 		finally {
@@ -360,7 +348,7 @@ public class NLPData {
 	 * @return topPeopleToCountList list of top n people and their frequency of occurrence
 	 */	
 	public List<Entry<String, Long>> findTopPeople(ArrayList<String> cleanPeople) {	
-//		Map<String, Long> tempMap = peopleInArticleArrayList.stream().collect(Collectors.groupingBy(w -> w, Collectors.counting()));
+		//		Map<String, Long> tempMap = peopleInArticleArrayList.stream().collect(Collectors.groupingBy(w -> w, Collectors.counting()));
 		Map<String, Long> tempMap = cleanPeople.stream().collect(Collectors.groupingBy(w -> w, Collectors.counting()));
 
 		topPeopleToCountList = tempMap.entrySet().stream()
@@ -375,33 +363,22 @@ public class NLPData {
 		return topPeopleToCountList;
 
 	}
-	
+
 	/**
-	 * Add note that this code for the future --what is does? why is it here? what is the plan for it?
 	 * This method is used to detect sentences in a paragraph/string in order to pull out the first sentence which should be the title
+	 * This code can be more extensively used in the future if we train a model to auto extract a summary of a text, but there's
+	 * still a lot to learn about training models!
 	 */
-	public String sentenceDetector() {		
-		try {
-		InputStream sentenceModelIn = new FileInputStream("en-sent.bin");
-		SentenceModel sentenceModel = new SentenceModel(sentenceModelIn);
-
-		//feed the model to SentenceDetectorME class
-		SentenceDetectorME sentenceDetector = new SentenceDetectorME(sentenceModel);
-
+	public String sentenceDetector() {	
 		//detect sentences in the paragraph
 		sentences = sentenceDetector.sentDetect(webPageText);
 
-		
-		System.out.println("Title of the article: " + sentences[0]);
-		
+		System.out.println("\nTitle of the article: " + sentences[0]);
+
 		//TESTING
-//		for(int i = 0; i < sentences.length; i++){
-//			System.out.println(sentences[i]);
-//		}
-		sentenceModelIn.close();
-		} catch (IOException e) {
-			System.out.println("Sentence Detector Model not loading properly.");
-		}
+		//		for(int i = 0; i < sentences.length; i++){
+		//			System.out.println(sentences[i]);
+		//		}
 		return sentences[0];
 	}
 
@@ -468,7 +445,7 @@ public class NLPData {
 	public HashMap<String, Integer> getTokenToCountMap() {
 		return tokenToCountMap;
 	}
-	
+
 	/**
 	 * Getter method for sentences
 	 * @return sentences
@@ -478,19 +455,107 @@ public class NLPData {
 	}
 
 	//TESTING
-//	public static void main(String args[]) {
-//		NLPData nlp = new NLPData();
-//		nlp.tokenizer(nlp.getWebPageText());
-//		ArrayList<String> temp = nlp.getTokenArrayList();
-//		nlp.createTokenToCountMap(temp);
-//		nlp.lemmatizer();
-//		nlp.lemmatizer(nlp.getTokenArrayList());
-//		nlp.findTopLemma(nlp.getLemmaArrayList());
-//		nlp.findTopPeople();
-//		nlp.findPeople();
-//		nlp.findTopPeople();
-//		nlp.sentenceDetector();
-//
-//	}
+	//	public static void main(String args[]) {
+	//		NLPData nlp = new NLPData();
+	//		nlp.tokenizer(nlp.getWebPageText());
+	//		ArrayList<String> temp = nlp.getTokenArrayList();
+	//		nlp.createTokenToCountMap(temp);
+	//		nlp.lemmatizer();
+	//		nlp.lemmatizer(nlp.getTokenArrayList());
+	//		nlp.findTopLemma(nlp.getLemmaArrayList());
+	//		nlp.findTopPeople();
+	//		nlp.findPeople();
+	//		nlp.findTopPeople();
+	//		nlp.sentenceDetector();
+	//
+	//	}
+	/*
+	 * TRYING to get full names out -- 
+	 * but it's still hard/inaccurate anyway because "Elizabeth Warren" and "Warren" get counted separately but
+	 * it's typical to have the two used interchangeably
+	 */
+	//			ArrayList<String> idklist = new ArrayList<>();
+	//			String idk = "";
+	//			for(Span s: nameSpans){
+	////	            System.out.print(s.toString());
+	//	            System.out.print("  :  ");
+	//	            // s.getStart() : contains the start index of possible name in the input string array
+	//	            // s.getEnd() : contains the end index of the possible name in the input string array
+	//	            for(int i = s.getStart(); i <s.getEnd(); i++){
+	//	            	idk = Tokens[i];
+	//	                System.out.print(Tokens[i] + " ");
+	//	            }
+	//	            
+	//	            idklist.add(idk);
+	//	            System.out.println("IDK: ");
+	//	            for (String idkstr : idklist) {
+	//	            	System.out.println(idkstr);
+	//	            }
+	//	            
+	//			}
+
+
+	//	//MOVE TO CONSTRUCTOR ------- ??????? it's failing
+	//	tokenModelIn = new FileInputStream("en-token.bin");
+	//	TokenizerModel tokenModel = new TokenizerModel(tokenModelIn);
+	//	Tokenizer tokenizer = new TokenizerME(tokenModel);			
+	////	tokenizer = new TokenizerME(tokenModelIn);
+	//	
+	//	//must tokenize the webPageText again because stop words cannot be removed for named entity recognition methods to properly function
+	////String text = webPageText;	
+	////String[] tokensArray = tokenizer.tokenize(text.toLowerCase());
+	//	
+	//	//MOVED TO CONSTRUCTOR ----- DELETE IF WORKING PROPERLY
+	////	entityModelIn = new FileInputStream(new File("en-ner-person.bin"));
+	////	TokenNameFinderModel tokenNameFinderModel = new TokenNameFinderModel(entityModelIn);
+	////	NameFinderME nameFinder = new NameFinderME(tokenNameFinderModel);
+	//
+	//	//DELETE IF WORKING AFTER CONSTRUCTOR MOVE
+	//	String text = webPageText;
+	//	String tokens[] = tokenizer.tokenize(text.toLowerCase());
+	//	Span[] nameSpans = nameFinder.find(tokens);
+	//
+	//	for (int i = 0; i < nameSpans.length; i++) {
+	//		String name = tokens[nameSpans[i].getStart()];
+	//		/*
+	//		 * Since 'The', 'I', and 'But' are commonly the first word of a sentence (and for 'The' - thus capitalized), the NER-Person Model
+	//		 * includes them as people's names, so removing here increases the accuracy of this method.
+	//		 */				
+	//		if (!name.equals("The") && (!name.equals("I")) && (!name.equals("But"))) {
+	//			peopleInArticleArrayList.add(name);
+	//		}
+	//	}			
+	//
+	//	String namePlusProbability = "";
+	//	System.out.println("\n------Name : Probability of Accuracy------");
+	//	for (int i = 0; i < peopleInArticleArrayList.size(); i++) {
+	//		for (int j = 0; j < nameSpans.length; j++) {
+	//			namePlusProbability = peopleInArticleArrayList.get(i) + " : " + nameSpans[i].getProb();
+	//		}
+	//		System.out.println(namePlusProbability);
+	//	}
+	//
+	//
+	//} catch (IOException e) {
+	//	System.out.println("Oops, something went wrong. Check that all the files are properly included.");
+	//	e.printStackTrace();
+	//}
+	//finally {
+	//	if (tokenModelIn != null) {
+	//		try {
+	//			tokenModelIn.close();
+	//		}
+	//		catch (IOException e) {
+	//		}
+	//	} if (entityModelIn != null) {
+	//		try {
+	//			entityModelIn.close();
+	//		}
+	//		catch (IOException e) {
+	//		}
+	//	}
+	//}
+	//return peopleInArticleArrayList;
+	//}	
 
 }
