@@ -37,24 +37,23 @@ import opennlp.tools.util.Span;
  * In learning how to use OpenNLP methods and pre-trained models, tutorials from www.tutorialkart.com were used
  */
 public class NLPData {
-	
-	private InputStream tokenModelIn = null;
-	private InputStream posModelIn = null;
-	private InputStream dictLemmatizer = null;
-	private InputStream entityModelIn = null;
-
 	private String webPageText;
+	private InputStream tokenModelIn;
+	private InputStream posModelIn;
+	private InputStream dictLemmatizer;
+	private InputStream entityModelIn;
 
-	//Just use the following String variable when not connected to WebScraper.java
+	//Just use for TESTING when not connected to WebScraper or Runner
 	//private String webPageText = "The story goes like this. ADD MORE :)";	
-	private ArrayList<String> stopWordsArrayList = new ArrayList<String>();
+	private ArrayList<String> stopWordsArrayList;
 	private ArrayList<String> tokenArrayList;
 	private ArrayList<String> lemmaArrayList;
 	private HashMap<String, Integer> tokenToCountMap;
 	private List<Map.Entry<String, Long>> topLemmaToCountList;
 	private ArrayList<String> peopleInArticleArrayList;
 	private List<Map.Entry<String, Long>> topPeopleToCountList;
-	String[] sentences = null;
+	String[] sentences;
+	
 	private sentimentAnalysis sA;
 
 	/**
@@ -62,6 +61,22 @@ public class NLPData {
 	 */
 	public NLPData(String text) {
 		this.webPageText = text;
+		tokenModelIn = null;
+		posModelIn = null;
+		dictLemmatizer = null;
+		entityModelIn = null;
+		
+		stopWordsArrayList = new ArrayList<String>();
+		tokenArrayList = new ArrayList<String>();
+		lemmaArrayList = new ArrayList<String>();
+		tokenToCountMap = new HashMap<String, Integer>();
+		topLemmaToCountList = null;
+		peopleInArticleArrayList  = new ArrayList<String>();
+		topPeopleToCountList = null;
+		sentences = null;
+		
+		sA = null;
+
 		//put the try/catch/finally for reading models and files into the constructor
 
 	}
@@ -71,6 +86,7 @@ public class NLPData {
 	 * @return ArrayList<String> - the Tokens (of just content words) of the web page text
 	 */
 	public ArrayList<String> tokenizer(String str) {
+		//Just use when TESTING with webscaper and not runner
 //		WebScraper webscraper = new WebScraper();
 //		String out = webscraper.runScraper();
 //		webPageText = out;
@@ -84,7 +100,6 @@ public class NLPData {
 			Tokenizer tokenizer = new TokenizerME(tokenModel);
 			//OpenNLP tokenize method for creating the Tokens and storing them in a String[]
 			String[] tokensArray = tokenizer.tokenize(str.toLowerCase());
-			tokenArrayList = new ArrayList<String>();
 			for(String token : tokensArray) {
 				tokenArrayList.add(token);
 			}
@@ -140,7 +155,6 @@ public class NLPData {
 //		ArrayList<String> tempTokenArrayList = tokenizer(webPageText);
 //		ArrayList<String> tempTokenArrayList = getTokenArrayList();
 		
-		tokenToCountMap = new HashMap<>();
 		for (String str : cleanTokens) {
 			if (tokenToCountMap.containsKey(str)) {
 				int tempCount = tokenToCountMap.get(str);
@@ -176,12 +190,8 @@ public class NLPData {
 			POSModel posModel = new POSModel(posModelIn);
 			//initializing the parts-of-speech tagger with OpenNLP pre-trained model
 			POSTaggerME posTagger = new POSTaggerME(posModel);
+			
 			//OpenNLP tag method for tagging the Tokens (which takes in array, thus the conversion from array list to array
-			
-			//OLD WAY _ DELETE??
-//			String[] tempTokensArray = new String[tempTokenArrayList.size()]; 
-//			tempTokensArray = tempTokenArrayList.toArray(tempTokensArray);
-			
 			String[] tempTokensArray = new String[cleanTokens.size()]; 
 			tempTokensArray = cleanTokens.toArray(tempTokensArray);
 			String[] tags = posTagger.tag(tempTokensArray);
@@ -196,14 +206,12 @@ public class NLPData {
 			String[] lemmas = lemmatizer.lemmatize(tempTokensArray, tags);
 
 			//converting lemmas String[] to array list
-			lemmaArrayList = new ArrayList<String>();
 			for(String lemma : lemmas) {
 				if (!lemma.equals("O")) {
 					lemmaArrayList.add(lemma);
 				}
 			}	      
 
-			//			lemmaArrayList.removeAll(stopWordsArrayList);
 			//TESTING: printing the results
 			//			System.out.println("LEMMALIST: " + lemmaArrayList);
 			//			System.out.println("\nPrinting lemmas for the given sentence...");
@@ -265,7 +273,6 @@ public class NLPData {
 	 * @return peopleInArticleArrayList list of the people in the article
 	 */
 	public ArrayList<String> findPeople() {
-		peopleInArticleArrayList = new ArrayList<>();
 		try {
 			//must tokenize the webPageText again because stop words cannot be removed for named entity recognition methods to properly function
 			tokenModelIn = new FileInputStream("en-token.bin");
@@ -307,7 +314,7 @@ public class NLPData {
 			for (int i = 0; i < nameSpans.length; i++) {
 				String name = tokens[nameSpans[i].getStart()];
 				/*
-				 * Since 'The' and 'I' are commonly the first word of a sentence (and for 'The' - thus capitalized), the NER-Person Model
+				 * Since 'The', 'I', and 'But' are commonly the first word of a sentence (and for 'The' - thus capitalized), the NER-Person Model
 				 * includes them as people's names, so removing here increases the accuracy of this method.
 				 */				
 				if (!name.equals("The") && (!name.equals("I"))) {
@@ -352,14 +359,12 @@ public class NLPData {
 	 * @return topPeopleToCountList list of top n people and their frequency of occurrence
 	 */
 	public List<Entry<String, Long>> findTopPeople() {
-		Map<String, Long> tempMap = peopleInArticleArrayList.stream()
-				.collect(Collectors.groupingBy(w -> w, Collectors.counting()));
+		Map<String, Long> tempMap = peopleInArticleArrayList.stream().collect(Collectors.groupingBy(w -> w, Collectors.counting()));
 
 		topPeopleToCountList = tempMap.entrySet().stream()
 				.sorted(Map.Entry.comparingByValue(Comparator.reverseOrder()))
 				//limit is hard-coded for how many top people you want returned
-				.limit(3)
-				.collect(Collectors.toList());
+				.limit(3).collect(Collectors.toList());
 
 		//TESTING
 		System.out.println();
@@ -387,7 +392,7 @@ public class NLPData {
 		
 		System.out.println("Title of the article: " + sentences[0]);
 		
-		
+		//TESTING
 //		for(int i = 0; i < sentences.length; i++){
 //			System.out.println(sentences[i]);
 //		}
