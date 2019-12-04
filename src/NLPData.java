@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Scanner;
+import java.util.TreeMap;
 import java.util.stream.Collectors;
 
 import opennlp.tools.lemmatizer.DictionaryLemmatizer;
@@ -357,9 +358,10 @@ public class NLPData {
 	 * Uses Array List of people created in the findPeople method to create a map of the people mentioned in the web page 
 	 * and their frequency and then sorts that by converting it to a list and comparing the values in order to return the top n people
 	 * @return topPeopleToCountList list of top n people and their frequency of occurrence
-	 */
-	public List<Entry<String, Long>> findTopPeople() {
-		Map<String, Long> tempMap = peopleInArticleArrayList.stream().collect(Collectors.groupingBy(w -> w, Collectors.counting()));
+	 */	
+	public List<Entry<String, Long>> findTopPeople(ArrayList<String> cleanPeople) {	
+//		Map<String, Long> tempMap = peopleInArticleArrayList.stream().collect(Collectors.groupingBy(w -> w, Collectors.counting()));
+		Map<String, Long> tempMap = cleanPeople.stream().collect(Collectors.groupingBy(w -> w, Collectors.counting()));
 
 		topPeopleToCountList = tempMap.entrySet().stream()
 				.sorted(Map.Entry.comparingByValue(Comparator.reverseOrder()))
@@ -376,9 +378,9 @@ public class NLPData {
 	
 	/**
 	 * Add note that this code for the future --what is does? why is it here? what is the plan for it?
-	 * This method is used to detect sentences in a paragraph/string
+	 * This method is used to detect sentences in a paragraph/string in order to pull out the first sentence which should be the title
 	 */
-	public String[] sentenceDetector() {		
+	public String sentenceDetector() {		
 		try {
 		InputStream sentenceModelIn = new FileInputStream("en-sent.bin");
 		SentenceModel sentenceModel = new SentenceModel(sentenceModelIn);
@@ -400,7 +402,7 @@ public class NLPData {
 		} catch (IOException e) {
 			System.out.println("Sentence Detector Model not loading properly.");
 		}
-		return sentences;
+		return sentences[0];
 	}
 
 	/**
