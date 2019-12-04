@@ -58,7 +58,7 @@ public class RUNNER implements ActionListener{
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		String url = urlTextBox.getText();
-		NLPData_copy_for_RUNNER nlpAnalysis = new NLPData_copy_for_RUNNER(url);
+		
 		if (e.getSource() == OKButton) {
 			
 			/*
