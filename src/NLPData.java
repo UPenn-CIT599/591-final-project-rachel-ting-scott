@@ -24,36 +24,29 @@ import opennlp.tools.tokenize.TokenizerME;
 import opennlp.tools.tokenize.TokenizerModel;
 import opennlp.tools.util.Span;
 
+/**
+ * Some definitions:
+ * token = text parsed as single words
+ * stop words = non-functional words in the English language (ex: 'the', 'and')
+ * POS = parts of speech (ex: noun, verb, adv, etc)
+ * lemma = the base form of a word in the dictionary form (ex: words --> word, types --> type)
+ * This class uses Apache OpenNLP to take in a String of text as input from the WebScraper class, tokenize it, remove stop words, 
+ * count the frequency of each token (for the purpose of the sentiment analysis), lemmatize the Tokens, 
+ * store those in a hashmap and pull out the top n content words for output,
+ * extract the names of people and store those in a hashmap and pull out the top n people mentioned for output
+ * In learning how to use OpenNLP methods and pre-trained models, tutorials from www.tutorialkart.com were used
+ */
 public class NLPData {
-	/**
-	 * My questions still:
-	 * 1. do I need the finally blocks and null initializations for the files?
-	 * 2. when reading in more than one file per method, is it okay if the try/catch covers both at same time but then message cannot
-	 * say which file specifically wasn't read properly
-	 * 3. List
-	 * 4. String tokens[] equals String[] tokens ??
-	 */
-	/**
-	 * Some definitions:
-	 * token = text parsed as single words
-	 * stop words = non-functional words in the English language (ex: 'the', 'and')
-	 * POS = parts of speech (ex: noun, verb, adv, etc)
-	 * lemma = the base form of a word in the dictionary form (ex: words --> word, types --> type)
-	 * This class uses Apache OpenNLP to take in a String of text as input from the WebScraper class, tokenize it, remove stop words, 
-	 * count the frequency of each token (for the purpose of the sentiment analysis), lemmatize the Tokens, 
-	 * store those in a hashmap and pull out the top n content words for output,
-	 * extract the names of people and store those in a hashmap and pull out the top n people mentioned for output
-	 * In learning how to use OpenNLP methods and pre-trained models, tutorials from www.tutorialkart.com were used
-	 */
+	
 	private InputStream tokenModelIn = null;
 	private InputStream posModelIn = null;
 	private InputStream dictLemmatizer = null;
 	private InputStream entityModelIn = null;
 
-	private String userWords;
+	private String webPageText;
 
 	//Just use the following String variable when not connected to WebScraper.java
-	//private String userWords = "The story goes like this. ADD MORE :)";	
+	//private String webPageText = "The story goes like this. ADD MORE :)";	
 	private ArrayList<String> stopWordsArrayList = new ArrayList<String>();
 	private ArrayList<String> tokenArrayList;
 	private ArrayList<String> lemmaArrayList;
@@ -67,18 +60,10 @@ public class NLPData {
 	/**
 	 * Constructor that creates an instance of the web scraper and sentiment analysis classes
 	 */
-	public NLPData() {
+	public NLPData(String text) {
+		this.webPageText = text;
 		//put the try/catch/finally for reading models and files into the constructor
-				
-		//MOVED TO tokenizer method
-//		WebScraper webscraper = new WebScraper();
-//		String out = webscraper.runScraper();
-//		userWords = out;
-		
-//instantiate this variable in this method and then put the completed tokenToCount map as parameter once the method has run
-		//as a global variable it'll get updated once the method is run, so perhaps delete the parameter as long as the sA is run after the 
-		//create tokenToCountMap method is run
-//		sA = new sentimentAnalysis(tokenToCountMap);
+
 	}
 
 	/**
@@ -86,9 +71,9 @@ public class NLPData {
 	 * @return ArrayList<String> - the Tokens (of just content words) of the web page text
 	 */
 	public ArrayList<String> tokenizer(String str) {
-		WebScraper webscraper = new WebScraper();
-		String out = webscraper.runScraper();
-		userWords = out;
+//		WebScraper webscraper = new WebScraper();
+//		String out = webscraper.runScraper();
+//		webPageText = out;
 		
 		try {
 			//reading OpenNLP Tokens model to a stream
@@ -98,14 +83,14 @@ public class NLPData {
 			//initializing the tokenizer with OpenNLP pre-trained model
 			Tokenizer tokenizer = new TokenizerME(tokenModel);
 			//OpenNLP tokenize method for creating the Tokens and storing them in a String[]
-			String[] tokensArray = tokenizer.tokenize(userWords.toLowerCase());
+			String[] tokensArray = tokenizer.tokenize(str.toLowerCase());
 			tokenArrayList = new ArrayList<String>();
 			for(String token : tokensArray) {
 				tokenArrayList.add(token);
 			}
 
 			//use when not connected to WebScraper.java
-			//			tokensArray = tokenizer.tokenize(userWords.toLowerCase());
+			//			tokensArray = tokenizer.tokenize(webPageText.toLowerCase());
 			//			//TESTING
 			//			System.out.println("tokensArray:");
 			//			for (String element : tokensArray) {
@@ -118,7 +103,7 @@ public class NLPData {
 			e.printStackTrace();
 		} 
 
-		//remove stop word from userWords using the stop-words-en.txt list of custom stop words
+		//remove stop word from webPageText using the stop-words-en.txt list of custom stop words
 		try {
 			File readStopWords = new File("stop-words-en.txt");
 			Scanner sc = new Scanner(readStopWords);
@@ -151,12 +136,12 @@ public class NLPData {
 	 * Grabs all the Tokens; counts their frequency; stores those key-value pairs in a HashMap
 	 * @return tokenToCountMap
 	 */
-	public HashMap<String, Integer> createTokenToCountMap() {	
-//		ArrayList<String> tempTokenArrayList = tokenizer(userWords);
-		ArrayList<String> tempTokenArrayList = getTokenArrayList();
-
+	public HashMap<String, Integer> createTokenToCountMap(ArrayList<String> cleanTokens) {	
+//		ArrayList<String> tempTokenArrayList = tokenizer(webPageText);
+//		ArrayList<String> tempTokenArrayList = getTokenArrayList();
+		
 		tokenToCountMap = new HashMap<>();
-		for (String str : tempTokenArrayList) {
+		for (String str : cleanTokens) {
 			if (tokenToCountMap.containsKey(str)) {
 				int tempCount = tokenToCountMap.get(str);
 				tempCount++;
@@ -166,9 +151,6 @@ public class NLPData {
 				tokenToCountMap.put(str, 1);
 			}
 		}
-		//		for (String s : stopWordsArrayList) {
-		//			tokenToCountMap.remove(s);
-		//		}
 
 		//TESTING
 		System.out.println();
@@ -182,8 +164,9 @@ public class NLPData {
 	 * The lemmas are used for outputting the most frequent content words of the web page. 
 	 * @return lemmaArrayList an array list of lemmas (of content words only)
 	 */
-	public ArrayList<String> lemmatizer() {
-		ArrayList<String> tempTokenArrayList = tokenizer(userWords);
+//	public ArrayList<String> lemmatizer() {
+	public ArrayList<String> lemmatizer(ArrayList<String> cleanTokens) {
+//		ArrayList<String> tempTokenArrayList = tokenizer(webPageText);
 //		ArrayList<String> tempTokenArrayList = getTokenArrayList();
 
 		try {
@@ -194,8 +177,13 @@ public class NLPData {
 			//initializing the parts-of-speech tagger with OpenNLP pre-trained model
 			POSTaggerME posTagger = new POSTaggerME(posModel);
 			//OpenNLP tag method for tagging the Tokens (which takes in array, thus the conversion from array list to array
-			String[] tempTokensArray = new String[tempTokenArrayList.size()]; 
-			tempTokensArray = tempTokenArrayList.toArray(tempTokensArray); 			
+			
+			//OLD WAY _ DELETE??
+//			String[] tempTokensArray = new String[tempTokenArrayList.size()]; 
+//			tempTokensArray = tempTokenArrayList.toArray(tempTokensArray);
+			
+			String[] tempTokensArray = new String[cleanTokens.size()]; 
+			tempTokensArray = cleanTokens.toArray(tempTokensArray);
 			String[] tags = posTagger.tag(tempTokensArray);
 
 			//loading the dictionary to input stream
@@ -256,19 +244,19 @@ public class NLPData {
 	 * then sorts that by converting it to a list and comparing the values in order to return the top n lemma
 	 * @return topLemmaToCountList list of top n lemma and their frequency of occurrence
 	 */
-	public List<Entry<String, Long>> findTopLemma() {
-		Map<String, Long> tempMap = lemmaArrayList.stream()
-				.collect(Collectors.groupingBy(w -> w, Collectors.counting()));
+	public List<Entry<String, Long>> findTopLemma(ArrayList<String> cleanLemma) {
+//		Map<String, Long> tempMap = lemmaArrayList.stream()
+//				.collect(Collectors.groupingBy(w -> w, Collectors.counting()));
+		
+		Map<String, Long> tempMap = cleanLemma.stream().collect(Collectors.groupingBy(w -> w, Collectors.counting()));
 
-		topLemmaToCountList = tempMap.entrySet().stream()
-				.sorted(Map.Entry.comparingByValue(Comparator.reverseOrder()))
+		topLemmaToCountList = tempMap.entrySet().stream().sorted(Map.Entry.comparingByValue(Comparator.reverseOrder()))
 				//limit is hard-coded for how many top words you want returned
-				.limit(5)
-				.collect(Collectors.toList());
+				.limit(5).collect(Collectors.toList());
 
 		//TESTING
-		System.out.println();
-		System.out.println("Top 5 content words in this article: " + topLemmaToCountList);
+//		System.out.println();
+//		System.out.println("Top 5 content words in this article: " + topLemmaToCountList);
 		return topLemmaToCountList;
 	}
 
@@ -279,7 +267,7 @@ public class NLPData {
 	public ArrayList<String> findPeople() {
 		peopleInArticleArrayList = new ArrayList<>();
 		try {
-			//must tokenize the userWords again because stop words cannot be removed for named entity recognition methods to properly function
+			//must tokenize the webPageText again because stop words cannot be removed for named entity recognition methods to properly function
 			tokenModelIn = new FileInputStream("en-token.bin");
 			TokenizerModel tokenModel = new TokenizerModel(tokenModelIn);
 			Tokenizer tokenizer = new TokenizerME(tokenModel);
@@ -287,7 +275,7 @@ public class NLPData {
 			TokenNameFinderModel tokenNameFinderModel = new TokenNameFinderModel(entityModelIn);
 			NameFinderME nameFinderME = new NameFinderME(tokenNameFinderModel);
 
-			String text = userWords;
+			String text = webPageText;
 			String tokens[] = tokenizer.tokenize(text);
 			Span nameSpans[] = nameFinderME.find(tokens);
 			
@@ -394,14 +382,15 @@ public class NLPData {
 		SentenceDetectorME sentenceDetector = new SentenceDetectorME(sentenceModel);
 
 		//detect sentences in the paragraph
-		sentences = sentenceDetector.sentDetect(userWords);
+		sentences = sentenceDetector.sentDetect(webPageText);
 
-		//TESTING - print sentences detected
-		System.out.println();
-		System.out.println("-----Individual sentences from the web page-----");
-		for(int i = 0; i < sentences.length; i++){
-			System.out.println(sentences[i]);
-		}
+		
+		System.out.println("Title of the article: " + sentences[0]);
+		
+		
+//		for(int i = 0; i < sentences.length; i++){
+//			System.out.println(sentences[i]);
+//		}
 		sentenceModelIn.close();
 		} catch (IOException e) {
 			System.out.println("Sentence Detector Model not loading properly.");
@@ -410,11 +399,11 @@ public class NLPData {
 	}
 
 	/**
-	 * Getter method for userWords
-	 * @return userWords
+	 * Getter method for webPageText
+	 * @return webPageText
 	 */
-	public String getUserWords() {
-		return userWords;
+	public String getWebPageText() {
+		return webPageText;
 	}
 
 	/**
@@ -481,15 +470,20 @@ public class NLPData {
 		return sentences;
 	}
 
-	public static void main(String args[]) {
-		NLPData nlp = new NLPData();
-		nlp.lemmatizer();
-		nlp.findTopLemma();
-		nlp.findPeople();
-		nlp.findTopPeople();
-		nlp.createTokenToCountMap();
-		nlp.sentenceDetector();
-
-	}
+	//TESTING
+//	public static void main(String args[]) {
+//		NLPData nlp = new NLPData();
+//		nlp.tokenizer(nlp.getWebPageText());
+//		ArrayList<String> temp = nlp.getTokenArrayList();
+//		nlp.createTokenToCountMap(temp);
+//		nlp.lemmatizer();
+//		nlp.lemmatizer(nlp.getTokenArrayList());
+//		nlp.findTopLemma(nlp.getLemmaArrayList());
+//		nlp.findTopPeople();
+//		nlp.findPeople();
+//		nlp.findTopPeople();
+//		nlp.sentenceDetector();
+//
+//	}
 
 }
