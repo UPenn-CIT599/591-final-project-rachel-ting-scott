@@ -201,7 +201,7 @@ public class NLPData {
 	 * @param an array List of cleaned tokens (meaning the stop words have been removed)
 	 */	
 //	public void createTokenToCountMap(ArrayList<String> cleanTokens) {	
-	public int getPositivityScore(ArrayList<String> cleanTokens) {	
+	public void getPositivityScore(ArrayList<String> cleanTokens) {	
 
 		//		ArrayList<String> tempTokenArrayList = tokenizer(webPageText);
 		//		ArrayList<String> tempTokenArrayList = getTokenArrayList();
@@ -221,7 +221,7 @@ public class NLPData {
 		System.out.println();
 		//		System.out.println("tokenToCountMap: " + tokenToCountMap);
 		sentimentAnalysis sA = new sentimentAnalysis(tokenToCountMap);
-		return sA.getScoreOutput();
+		positivityScore = sA.getScoreOutput();
 	}
 
 	/**

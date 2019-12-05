@@ -2,6 +2,7 @@ import java.awt.FlowLayout;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.ArrayList;
 
 import javax.swing.AbstractButton;
 import javax.swing.JButton;
@@ -71,8 +72,21 @@ public class RUNNER implements ActionListener{
 			 *      						   // to be printed in the bottom TextArea of the UI. 
 			 * 
 			 */
-	
-			resultAnalysis.setText(url);
+			NLPData nlp = new NLPData(url);
+			nlp.tokenizer(nlp.getWebPageText());
+			ArrayList<String> temp = nlp.getTokenArrayList();
+			nlp.lemmatizer(nlp.getTokenArrayList());
+			nlp.findTopLemma(nlp.getLemmaArrayList());
+			nlp.getPositivityScore(nlp.getTokenArrayList());
+			System.out.println(nlp.getTokenArrayList());
+			System.out.println(nlp.getTokenToCountMap());
+			System.out.println(nlp.getPositivityScore());
+			
+			String positivityScore = "The positivity score is " + nlp.getPositivityScore() + ".";
+			
+			
+			
+			resultAnalysis.setText(positivityScore);
 		}
 	}
 	

@@ -42,7 +42,7 @@ public class sentimentAnalysis {
 		
 		wordCounter(NLPResult);
 		scoreCounter();
-		System.out.println("The positivity score is: " + scoreOutput);
+//		System.out.println("The positivity score is: " + scoreOutput);
 		
 	}
 
