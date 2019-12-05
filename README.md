@@ -3,10 +3,7 @@ final-project-rachel-ting-scott created by GitHub Classroom
 
 To-Do List
 +++get recommendations from nytimes.csv
-+++get summarizing to work??
-+++output -- GUI
 +++add JavaDocs
-+++add JUnit tests (we need 15)
 +++clean githup repo -- delete unused files
 
 Name:
@@ -35,4 +32,4 @@ List of stop words was created by combining different open source lists: https:/
 We added punctuation to the stop words list to ensure cleaner lists of tokens, stems, and lemmas;
 Tutorial used for learning how to use OpenNLP: https://www.tutorialkart.com/opennlp/apache-opennlp-tutorial/;
 
-Project Status:
+Project Status: on-going. We are working on including a summary analysis and 
