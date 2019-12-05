@@ -3,6 +3,8 @@ import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 import javax.swing.AbstractButton;
 import javax.swing.JButton;
@@ -77,16 +79,21 @@ public class RUNNER implements ActionListener{
 			ArrayList<String> temp = nlp.getTokenArrayList();
 			nlp.lemmatizer(nlp.getTokenArrayList());
 			nlp.findTopLemma(nlp.getLemmaArrayList());
+			
+			//List<Map.Entry<String, Long>> topLemmaToCountList
+			String lemma = "";
+			for (Map.Entry<String, Long> lemmaMap : nlp.getTopLemmaToCountList()) {
+				lemma += lemmaMap.getKey() + " ";
+			}
+			System.out.println(nlp.getTopLemmaToCountList());
+			
+			
 			nlp.getPositivityScore(nlp.getTokenArrayList());
-			System.out.println(nlp.getTokenArrayList());
-			System.out.println(nlp.getTokenToCountMap());
-			System.out.println(nlp.getPositivityScore());
-			
-			String positivityScore = "The positivity score is " + nlp.getPositivityScore() + ".";
+			String positivityScore = "The positivity score is: " + nlp.getPositivityScore() + ".";
 			
 			
 			
-			resultAnalysis.setText(positivityScore);
+			resultAnalysis.setText("The top lemma words are: " + lemma + "\n" + positivityScore);
 		}
 	}
 	
