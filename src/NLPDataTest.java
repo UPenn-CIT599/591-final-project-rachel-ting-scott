@@ -101,7 +101,7 @@ class NLPDataTest {
 				expectedAnswer.put(str, 1);
 			}
 		}
-		nlp.createTokenToCountMap(testTokens);
+		nlp.getPositivityScore(testTokens);
 		assertEquals(expectedAnswer, nlp.getTokenToCountMap());
 	}
 

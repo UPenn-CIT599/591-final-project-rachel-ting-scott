@@ -58,12 +58,11 @@ public class NLPData {
 	private ArrayList<String> tokenArrayList;
 	private ArrayList<String> lemmaArrayList;
 	private HashMap<String, Integer> tokenToCountMap;
+	private int positivityScore;
 	private List<Map.Entry<String, Long>> topLemmaToCountList;
 	private ArrayList<String> peopleInArticleArrayList;
 	private List<Map.Entry<String, Long>> topPeopleToCountList;
 	String[] sentences;
-
-	private sentimentAnalysis sA;
 
 	/**
 	 * Constructor that initializes the instance variables and reads in the required trained models and files to run the methods
@@ -80,8 +79,6 @@ public class NLPData {
 		peopleInArticleArrayList  = new ArrayList<String>();
 		topPeopleToCountList = null;
 		sentences = null;
-
-		sA = null;
 
 		//try-catch for Files
 		try {
@@ -203,7 +200,9 @@ public class NLPData {
 	 * Grabs all the Tokens; counts their frequency; stores those key-value pairs in a HashMap
 	 * @param an array List of cleaned tokens (meaning the stop words have been removed)
 	 */	
-	public void createTokenToCountMap(ArrayList<String> cleanTokens) {	
+//	public void createTokenToCountMap(ArrayList<String> cleanTokens) {	
+	public int getPositivityScore(ArrayList<String> cleanTokens) {	
+
 		//		ArrayList<String> tempTokenArrayList = tokenizer(webPageText);
 		//		ArrayList<String> tempTokenArrayList = getTokenArrayList();
 
@@ -221,7 +220,8 @@ public class NLPData {
 		//TESTING
 		System.out.println();
 		//		System.out.println("tokenToCountMap: " + tokenToCountMap);
-		sA = new sentimentAnalysis(tokenToCountMap);
+		sentimentAnalysis sA = new sentimentAnalysis(tokenToCountMap);
+		return sA.getScoreOutput();
 	}
 
 	/**
@@ -365,7 +365,8 @@ public class NLPData {
 		//detect sentences in the paragraph
 		sentences = sentenceDetector.sentDetect(webPageText);
 
-		System.out.println("\nTitle of the article: " + sentences[0]);
+		//TESTING
+//		System.out.println("\nTitle of the article: " + sentences[0]);
 
 		//TESTING
 		//		for(int i = 0; i < sentences.length; i++){
@@ -436,6 +437,10 @@ public class NLPData {
 	 */
 	public HashMap<String, Integer> getTokenToCountMap() {
 		return tokenToCountMap;
+	}
+	
+	public int getPositivityScore() {
+		return positivityScore;
 	}
 
 	//TESTING
