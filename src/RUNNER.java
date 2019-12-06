@@ -80,24 +80,31 @@ public class RUNNER implements ActionListener{
 			nlp.findTopLemma(nlp.getLemmaArrayList());
 			//List<Map.Entry<String, Long>> topLemmaToCountList
 			String lemma = "";
+			int i = 1;
 			for (Map.Entry<String, Long> lemmaMap : nlp.getTopLemmaToCountList()) {
-				lemma += lemmaMap.getKey() + " ";
+				lemma += i + "." + lemmaMap.getKey() + " ";
+				i++;
 			}
-			System.out.println(nlp.getTopLemmaToCountList());
 			
 			//3. print out the top names
 			nlp.findPeople();
 			nlp.findTopPeople(nlp.getPeopleInArticleArrayList());
 			//List<Map.Entry<String, Long>> topPeopleToCountList
 			String topPeople = "";
+			int n = 1;
 			for (Map.Entry<String, Long> peopleMap : nlp.getTopPeopleToCountList()) {
-				topPeople += peopleMap.getKey() + " ";
+				topPeople += n + "." + peopleMap.getKey() + " ";
+				n++;
 			}
 			
 			//4. print out the recommended urls
 			URLRecommender recommender = new URLRecommender();
-			// change lemma to arrayList
-			String str[] = lemma.split(" ");
+			// change keywords to arrayList
+			String keywords = "";
+			for (Map.Entry<String, Long> lemmaMap : nlp.getTopLemmaToCountList()) {
+				keywords += lemmaMap.getKey() + " ";
+			}
+			String str[] = keywords.split(" ");
 			ArrayList<String> topKeywords = new ArrayList<String>();
 			for (String singleStr : str) {
 				topKeywords.add(singleStr);
@@ -116,9 +123,9 @@ public class RUNNER implements ActionListener{
 			
 			
 			resultAnalysis.setText(
-					"The title is: " + title + "\n" +
-					"The top keywords are: " + lemma + "\n" +
-					"The top names are: " + topPeople + "\n" +
+					"The title is: " + title + "\n\n" +
+					"The top keywords are: " + lemma + "\n\n" +
+					"The top names are: " + topPeople + "\n\n" +
 					"We recommend these websites to you: " + "\n" + ListOfRecommendedURL + "\n" +
 					"The positivity score is: " + positivityScore);
 		}
