@@ -26,17 +26,17 @@ import opennlp.tools.tokenize.TokenizerModel;
 import opennlp.tools.util.Span;
 
 /**
- * Some definitions:
- * Token = text parsed as single words
- * Stop words = non-functional words in the English language (ex: 'the', 'and')
- * POS = parts of speech (ex: noun, verb, adv, etc)
- * Lemma = the base form of a word in the dictionary form (ex: words --> word, types --> type)
- * Named Entity Recognition (NER) = identifying a named entity, such as person or place, in a text
+ * Relevant linguistics definitions:
+ * Token = text parsed as single words.
+ * Stop words = non-functional words in the English language (ex: 'the', 'and').
+ * POS = parts of speech (ex: noun, verb, adv, etc).
+ * Lemma = the base form of a word in the dictionary form (ex: words --> word, types --> type).
+ * Named Entity Recognition (NER) = identifying a named entity, such as person or place, in a text.
  * This class uses Apache OpenNLP to take in a String of text as input from the WebScraper class, tokenize it, remove stop words, 
- * count the frequency of each token (for the purpose of the sentiment analysis), lemmatize the Tokens, 
- * store those in a hashmap and pull out the top n content words for output,
- * extract the names of people and store those in a hashmap and pull out the top n people mentioned for output
- * In learning how to use OpenNLP methods and pre-trained models, tutorials from www.tutorialkart.com were used
+ * count the frequency of each token (for the purpose of the sentiment analysis), POS tag each token in order to lemmatize them, 
+ * store those in a hashmap and pull out the top n content words for output, extract the names of people and store those in a 
+ * hashmap and pull out the top n people mentioned for output In learning how to use OpenNLP methods and pre-trained models, 
+ * tutorials from www.tutorialkart.com were used.
  * @author rachelfriend, Ting-Hsuan Lee, Scott Theer
  */
 public class NLPData {
@@ -73,10 +73,7 @@ public class NLPData {
 		tokenArrayList = new ArrayList<String>();
 		lemmaArrayList = new ArrayList<String>();
 		tokenToCountMap = new HashMap<String, Integer>();
-		topLemmaToCountList = null;
 		peopleInArticleArrayList  = new ArrayList<String>();
-		topPeopleToCountList = null;
-		sentences = null;
 
 		//try-catch for Files
 		try {
@@ -266,8 +263,8 @@ public class NLPData {
 
 		Map<String, Long> tempMap = cleanLemma.stream().collect(Collectors.groupingBy(w -> w, Collectors.counting()));
 
+		//limit is hard-coded for how many top words you want returned
 		topLemmaToCountList = tempMap.entrySet().stream().sorted(Map.Entry.comparingByValue(Comparator.reverseOrder()))
-				//limit is hard-coded for how many top words you want returned
 				.limit(5).collect(Collectors.toList());
 
 		//TESTING
@@ -278,22 +275,16 @@ public class NLPData {
 	/**
 	 * Extracts the people's names from the web page and calculates the probability of accuracy
 	 */
-	public void findPeople() {
-		try {
-			//must tokenize the webPageText again because stop words cannot be removed for named entity recognition methods to properly function
-			tokenModelIn = new FileInputStream("en-token.bin");
-			TokenizerModel tokenModel = new TokenizerModel(tokenModelIn);
-			Tokenizer tokenizer = new TokenizerME(tokenModel);
-			entityModelIn = new FileInputStream(new File("en-ner-person.bin"));
-			TokenNameFinderModel tokenNameFinderModel = new TokenNameFinderModel(entityModelIn);
-			NameFinderME nameFinderME = new NameFinderME(tokenNameFinderModel);
-
-			String text = getWebPageText();
-			String tokens[] = tokenizer.tokenize(text);
-			Span nameSpans[] = nameFinderME.find(tokens);
+	public void findPeople(String str) {
+			/*
+			 * Must tokenize the webPageText again because stop words cannot be removed for named entity recognition model and 
+			 * methods to function properly.
+			 */
+			String[] tokensArray = tokenizer.tokenize(str.toLowerCase());
+			Span nameSpans[] = nameFinder.find(tokensArray);
 
 			for (int i = 0; i < nameSpans.length; i++) {
-				String name = tokens[nameSpans[i].getStart()];
+				String name = tokensArray[nameSpans[i].getStart()];
 				/*
 				 * Since 'The', 'I', and 'But' are commonly the first word of a sentence (and thus capitalized), the NER-Person Model
 				 * includes them as people's names, so removing here increases the accuracy of this method.
@@ -311,26 +302,6 @@ public class NLPData {
 				}
 				System.out.println(namePlusProbability);
 			}
-
-		} catch (IOException e) {
-			System.out.println("Oops, something went wrong. Models didn't load.");
-			e.printStackTrace();
-		}
-		finally {
-			if (tokenModelIn != null) {
-				try {
-					tokenModelIn.close();
-				}
-				catch (IOException e) {
-				}
-			} if (entityModelIn != null) {
-				try {
-					entityModelIn.close();
-				}
-				catch (IOException e) {
-				}
-			}
-		}
 	}	
 
 	/**
@@ -341,9 +312,8 @@ public class NLPData {
 	public void findTopPeople(ArrayList<String> cleanPeople) {	
 		Map<String, Long> tempMap = cleanPeople.stream().collect(Collectors.groupingBy(w -> w, Collectors.counting()));
 
-		topPeopleToCountList = tempMap.entrySet().stream()
-				.sorted(Map.Entry.comparingByValue(Comparator.reverseOrder()))
-				//limit is hard-coded for how many top people you want returned
+		//limit is hard-coded for how many top people you want returned
+		topPeopleToCountList = tempMap.entrySet().stream().sorted(Map.Entry.comparingByValue(Comparator.reverseOrder()))
 				.limit(3).collect(Collectors.toList());
 
 		//TESTING

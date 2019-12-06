@@ -181,7 +181,7 @@ class NLPDataTest {
 				"Kennedy", "Brett", "Kavanaugh", "Kavanaugh", "Kavanaugh", "Clement"));
 		//this was the answer: [Antonin, Scalia, But, Brett] --> Kennedy and Kavanaugh are not being recognized
 		ArrayList<String> expectedAnswer2 = new ArrayList<String>(Arrays.asList("Antonin", "Scalia", "Brett"));
-		nlp.findPeople();
+		nlp.findPeople(testPara);
 		assertEquals(expectedAnswer2, nlp.getPeopleInArticleArrayList());
 	}
 
