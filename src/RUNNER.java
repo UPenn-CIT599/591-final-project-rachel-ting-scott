@@ -87,7 +87,7 @@ public class RUNNER implements ActionListener{
 			}
 			
 			//3. print out the top names
-			nlp.findPeople();
+			nlp.findPeople(toBeAnalysed); // this doesn't work now!!
 			nlp.findTopPeople(nlp.getPeopleInArticleArrayList());
 			//List<Map.Entry<String, Long>> topPeopleToCountList
 			String topPeople = "";
