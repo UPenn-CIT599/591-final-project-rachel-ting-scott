@@ -69,8 +69,6 @@ public class NLPData {
 	 */
 	public NLPData(String text) {
 		this.webPageText = text;
-		entityModelIn = null;
-
 		stopWordsArrayList = new ArrayList<String>();
 		tokenArrayList = new ArrayList<String>();
 		lemmaArrayList = new ArrayList<String>();
