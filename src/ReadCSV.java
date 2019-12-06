@@ -4,9 +4,20 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.List;
-
+/**
+ * Reads in NYTimes data set mapping news article URLs to extracted keywords.
+ * Among other information in the data set, this class only takes keyword list
+ * and associated URL for each data entry in the CSV.
+ * @author Rachel Friend, Ting-Hsuan Lee, Scott Theer
+ */
 public class ReadCSV {
 
+	/**
+	 * Absorbs relevant information (keyword list and URL) from
+	 * NYTimes data set CSV.
+	 * @return NYTimes keyword ArrayList
+	 * @throws IOException
+	 */
 	public HashMap<String[], String> read() throws IOException {
 		Path p1 = Paths.get("nytimes.csv");
 		List<String> lines = Files.readAllLines(p1);

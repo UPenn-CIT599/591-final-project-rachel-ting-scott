@@ -3,8 +3,25 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 
+/**
+ * Makes use of NYTimes data set (mapping news article URLs to extracted keywords).
+ * Searches over the keyword list extracted from the user-provided URL and matches
+ * keywords to NYTimes set, suggests URLs with matching keywords.
+ * @author Rachel Friend, Ting-Hsuan Lee, Scott Theer
+ */
 public class URLRecommender{
 	
+	private ArrayList<String> recommend;
+	 
+	public URLRecommender() {
+		recommend = new ArrayList<String>();
+	}
+	
+	/**
+	 * Runs ReadCSV class to read relevant NYTimes data into
+	 * ArrayList (keys are keywords and values are URLs)
+	 * @return NYTimes keyword ArrayList
+	 */
 	public HashMap<String[], String> createMap() {
 		ReadCSV r = new ReadCSV();
 		HashMap<String[], String> hash;
@@ -17,7 +34,14 @@ public class URLRecommender{
 		return hash;
 	}
 	
-	public ArrayList<String> recommendURL(HashMap<String[], String> hash, ArrayList<String> topWords) {
+	/**
+	 * Runs through keywords from user-provided URL to check if these keywords
+	 * exist in the NYTimes set. If they do, the URL associated with keyword is added
+	 * to recommendation list.
+	 * @param hash NYTimes keyword ArrayList
+	 * @param topWords keywords from URL
+	 */
+	public void recommendURL(HashMap<String[], String> hash, ArrayList<String> topWords) {
 		ArrayList<String> recommend = new ArrayList<String>();
 		for(String[] keys : hash.keySet()) {
 			for(String word : topWords) {
@@ -29,23 +53,14 @@ public class URLRecommender{
 		if(recommend.size() == 0) {
 			System.out.println("Sorry, no recommendations!");
 		}
+	}
+	
+	/**
+	 * Getter for recommendation list
+	 * @return recommendation list
+	 */
+	public ArrayList<String> getRecommendations() {
 		return recommend;
 	}
 	
-	public static void main(String[] args) {
-		URLRecommender url = new URLRecommender();
-		HashMap<String[], String> hash = url.createMap();
-		
-		ArrayList<String> topWords = new ArrayList<String>();
-		topWords.add("trump");
-		topWords.add("war");
-		topWords.add("lawmakers");
-		topWords.add("china");
-		topWords.add("impeachment");
-		
-		ArrayList<String> recommendations = url.recommendURL(hash, topWords);
-		for(String s : recommendations) {
-			System.out.println(s);
-		}
-	}
 }
