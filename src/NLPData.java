@@ -195,7 +195,7 @@ public class NLPData {
 	 * Grabs all the Tokens; counts their frequency; stores those key-value pairs in a HashMap
 	 * @param an array List of cleaned tokens (meaning the stop words have been removed)
 	 */	
-//	public void createTokenToCountMap(ArrayList<String> cleanTokens) {	
+	//	public void createTokenToCountMap(ArrayList<String> cleanTokens) {	
 	public void getPositivityScore(ArrayList<String> cleanTokens) {	
 
 		//		ArrayList<String> tempTokenArrayList = tokenizer(webPageText);
@@ -276,32 +276,32 @@ public class NLPData {
 	 * Extracts the people's names from the web page and calculates the probability of accuracy
 	 */
 	public void findPeople(String str) {
+		/*
+		 * Must tokenize the webPageText again because stop words cannot be removed for named entity recognition model and 
+		 * methods to function properly.
+		 */
+		String[] tokensArray = tokenizer.tokenize(str.toLowerCase());
+		Span nameSpans[] = nameFinder.find(tokensArray);
+
+		for (int i = 0; i < nameSpans.length; i++) {
+			String name = tokensArray[nameSpans[i].getStart()];
 			/*
-			 * Must tokenize the webPageText again because stop words cannot be removed for named entity recognition model and 
-			 * methods to function properly.
-			 */
-			String[] tokensArray = tokenizer.tokenize(str.toLowerCase());
-			Span nameSpans[] = nameFinder.find(tokensArray);
-
-			for (int i = 0; i < nameSpans.length; i++) {
-				String name = tokensArray[nameSpans[i].getStart()];
-				/*
-				 * Since 'The', 'I', and 'But' are commonly the first word of a sentence (and thus capitalized), the NER-Person Model
-				 * includes them as people's names, so removing here increases the accuracy of this method.
-				 */				
-				if (!name.equals("The") && (!name.equals("I")) && (!name.equals("But"))) {
-					peopleInArticleArrayList.add(name);
-				}
-			}			
-
-			String namePlusProbability = "";
-			System.out.println("\n------Name : Probability of Accuracy------");
-			for (int i = 0; i < peopleInArticleArrayList.size(); i++) {
-				for (int j = 0; j < nameSpans.length; j++) {
-					namePlusProbability = peopleInArticleArrayList.get(i) + " : " + nameSpans[i].getProb();
-				}
-				System.out.println(namePlusProbability);
+			 * Since 'The', 'I', and 'But' are commonly the first word of a sentence (and thus capitalized), the NER-Person Model
+			 * includes them as people's names, so removing here increases the accuracy of this method.
+			 */				
+			if (!name.equals("The") && (!name.equals("I")) && (!name.equals("But"))) {
+				peopleInArticleArrayList.add(name);
 			}
+		}			
+
+		String namePlusProbability = "";
+		System.out.println("\n------Name : Probability of Accuracy------");
+		for (int i = 0; i < peopleInArticleArrayList.size(); i++) {
+			for (int j = 0; j < nameSpans.length; j++) {
+				namePlusProbability = peopleInArticleArrayList.get(i) + " : " + nameSpans[i].getProb();
+			}
+			System.out.println(namePlusProbability);
+		}
 	}	
 
 	/**
@@ -334,7 +334,7 @@ public class NLPData {
 		sentences = sentenceDetector.sentDetect(webPageText);
 
 		//TESTING
-//		System.out.println("\nTitle of the article: " + sentences[0]);
+		//		System.out.println("\nTitle of the article: " + sentences[0]);
 
 		//TESTING
 		//		for(int i = 0; i < sentences.length; i++){
@@ -406,13 +406,26 @@ public class NLPData {
 	public HashMap<String, Integer> getTokenToCountMap() {
 		return tokenToCountMap;
 	}
-	
+
 	public int getPositivityScore() {
 		return positivityScore;
 	}
 
 	//TESTING
-	//	public static void main(String args[]) {
+	public static void main(String args[]) {
+		String str = "What did the Supreme Court mean in its 2008 decision when it said that the "
+				+ "right to bear arms is an individual right? Back then, Justice Antonin Scalia, writing for the five justice court majority, "
+				+ "framed the right most explicitly as the right to own a gun for self defense in one's home. Moreover, the opinion "
+				+ "contained a paragraph of specific qualifiers that, according to court sources, were added to Scalia's opinion at the "
+				+ "insistence of Justice Kennedy, who provided the fifth vote needed to prevail in the case. The court said, for instance, "
+				+ "that its opinion \"cast no doubt on\" longstanding bans on \"carrying firearms in sensitive places such as schools and "
+				+ "government buildings, or bans on dangerous and unusual weapons. It will make a difference that Justice Kavanaugh is on "
+				+ "the court. But Kennedy — who insisted on that limiting language — has now retired, replaced by Justice Brett Kavanaugh. "
+				+ "And Kavanaugh, as a lower court judge, wrote in favor of expansive gun rights. I do think it will make a difference "
+				+ "that Justice Kavanaugh is on the court,\" says the gun owners' Clement.";
+		NLPData nlp = new NLPData(str);
+		nlp.findPeople(str);
+	}
 	//		NLPData nlp = new NLPData();
 	//		nlp.tokenizer(nlp.getWebPageText());
 	//		ArrayList<String> temp = nlp.getTokenArrayList();
