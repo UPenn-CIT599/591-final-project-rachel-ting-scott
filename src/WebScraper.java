@@ -1,6 +1,5 @@
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Scanner;
 
 import org.jsoup.*;
 import org.jsoup.Connection.Response;
@@ -9,6 +8,13 @@ import org.jsoup.safety.Cleaner;
 import org.jsoup.safety.Whitelist;
 import org.jsoup.select.Elements;
 
+/**
+ * Scrapes user-provided URL for relevant HTML elements (paragraph 
+ * elements and header elements). It first cleans the HTML and only
+ * keeps "safe" elements (including "p", "li", "h1", "h2", "h3", "h4", "h5",
+ * "a", "href", "target"), then pulls relevant tags.
+ * @author Rachel Friend, Ting-Hsuan Lee, Scott Theer
+ */
 public class WebScraper {
 	
 	public static String referrer = "http://www.google.com";
@@ -18,9 +24,18 @@ public class WebScraper {
 	public WebScraper() {	
 	}
 	
+	/**
+	 * Cleans HTML to remove any elements that could be
+	 * potentially dangerous to class (XSS attacks), or are not necessary
+	 * for extraction
+	 * @param content JSOUP HTML
+	 * @param additionalTags Tags to be kept in HTML
+	 * @return String cleaned HTML
+	 */
 	public String cleanContent(String content, ArrayList<String> additionalTags) {
 		Whitelist cleanValues = Whitelist.simpleText();
-		cleanValues.addTags("p", "li");
+		
+		cleanValues.addTags("p", "li", "h1", "h2", "h3", "h4", "h5");
 		if(additionalTags != null) {
 			for(String tag: additionalTags) {
 				cleanValues.addTags(tag);
@@ -36,6 +51,12 @@ public class WebScraper {
 		return safe;
 	}
 	
+	/**
+	 * Test URL connection and grab URL if connection is valid
+	 * @param url User-provided URL
+	 * @return String raw HTML
+	 * @throws IllegalArgumentException
+	 */
 	public String getConnection(String url) throws IllegalArgumentException {
         Connection conn = Jsoup.connect(url).ignoreContentType(true).userAgent(userAgent).referrer(referrer).timeout(12000).followRedirects(true);
         String out;
@@ -57,25 +78,34 @@ public class WebScraper {
 		return out;
 	}
 	
+	/**
+	 * Grab relevant HTML tags
+	 * @param safeHtml cleaned HTML
+	 * @return String relevant HTML tags
+	 */
 	public String readHtml(String safeHtml) {
 		Document doc = Jsoup.parse(safeHtml);
 		Elements paragraphs = doc.getElementsByTag("p");
+		Elements headers = doc.select("h1, h2, h3, h4, h5");
+		String title = headers.text();
 		String paras = paragraphs.text();
-		return paras;
+		return title + " " + paras;
 	}
 
-	public String runScraper() {
-		Scanner s = new Scanner(System.in);
-		System.out.println("Provide URL: ");
+	/**
+	 * Run URL connection, clean HTML, and grab relevant tags
+	 * @param url User-provided URL
+	 * @return String final HTML
+	 */
+	public String runScraper(String url) {
 		boolean done = true;
 		String outParas = null;
 		while(done) {
 			try{
-				String connection = s.nextLine();
-				if(!connection.contains("http")) { 
-					 connection = "https://" + connection;
+				if(!url.contains("http")) { 
+					 url = "https://" + url;
 				}
-				String rawHtml = getConnection(connection);
+				String rawHtml = getConnection(url);
 				String safeHtml = cleanContent(rawHtml, null);
 				outParas = readHtml(safeHtml);
 				System.out.println(outParas);
@@ -84,12 +114,6 @@ public class WebScraper {
 				System.out.println("Invalid URL!");
 			}
 		}
-		s.close();
 		return outParas;
     }
-	
-	public static void main(String[] args) {
-		WebScraper ws = new WebScraper();
-		String out = ws.runScraper();
-	}
 }
