@@ -1,0 +1,24 @@
+Project name:
+News Article Recommender
+
+Description:
+This program takes a user's input of a URL of a news article page and scrapes that page in order to return the text as a clean string.
+Then, it runs an analysis on the linguistic content of that text. It tokenizes the content (splits the string into individual tokens, 
+or words) and removes the stop words from that list of tokens. In a lot of NLP analysis, stop words get in the way, cause irregularities, 
+and can also slow down the program. Next, the program takes the tokens and runs the sentiment analysis on them to get the positivity score 
+of the user's article. Then it takes the tokens and tags them for their parts of speech (POS) in order to get the lemma. Lemma are the 
+base form of words in a dictionary. This is done so that words with the same dictionary root are considered the same for the purpose of 
+semantic analysis. So, the lemma form of 'says' is 'say' and the lemma form of 'classes' is 'class'. Extracting the lemma then results 
+in more accurate frequency calculations of words for semantic analysis. This lemmanization results in the finding of the top n (hard-coded to 5) 
+content words of an article which is a rudimentary strategy for finding keywords. The analysis then finds the names of people mentioned in 
+the article and returns the top n (hard-coded to 3) most frequently found. After that, the top content words (keywords) are used to check 
+against a data set of NYTimes articles that are tagged by keyword to suggest to the user articles from that data set that include one or 
+more of the same keywords. The analysis and recommendations are output to the user via the GUI. 
+
+Work break-down:
+Ting-Hsuan Lee: sentimentAnalysis, sentimentAnalysisTest, and RUNNER (GUI) classes
+Rachel Friend: NLPData and NLPDataTest classes
+Scott Theer: WebScraper, WebScraperTest, URLRecommender, URLRecommenderTest, ReadCSV, and ReadCSVTest classes
+
+GitHub URL:
+https://github.com/UPenn-CIT599/final-project-rachel-ting-scott

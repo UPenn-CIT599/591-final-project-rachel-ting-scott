@@ -2,7 +2,7 @@
 final-project-rachel-ting-scott created by GitHub Classroom
 
 Name:
-
+News Article Recommender 
 
 Description:
 This program asks user's to input the URL of a news article and then analyzes the language of it to determine the top n content words 
