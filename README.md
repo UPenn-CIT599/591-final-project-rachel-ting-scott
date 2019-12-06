@@ -1,11 +1,6 @@
 # final-project-rachel-ting-scott
 final-project-rachel-ting-scott created by GitHub Classroom
 
-To-Do List
-+++get recommendations from nytimes.csv
-+++add JavaDocs
-+++clean githup repo -- delete unused files
-
 Name:
 
 
@@ -16,12 +11,16 @@ on positive or negative scoring on a scale, and provides recommendations for oth
 top n content words of the user's original web page. The recommended articles are from a Kaggle data set of NY Times articles: 
 https://www.kaggle.com/harishcscode/all-news-articles-from-home-page-media-house/version/1#nytimes.csv
 
+Instructions: 
+Run the RUNNER class. In the pop-up window, enter the url of the website you wish to run the analysis and click the "OK" button. 
+In the text box below, you will see the analysis results which include the title, the top keywords, the top names, some other websites 
+recommended to you, and a score showing how positive this website is.
 
 Installation:
 To use this program, users should not need to install anything because all the .jar files are added here in the lib folder.
-However, if installation is necessary, Mac users can follow these instructions to install via terminal: https://brewinstall.org/install-apache-opennlp-on-mac-with-brew/
-and windows users can ??? (SCOTT - I think you don 't use a mac? Can you help with this question?)
-or users can download directly from here: https://opennlp.apache.org/download.html
+However, if installation is necessary, Mac users can follow these instructions to install via terminal: 
+https://brewinstall.org/install-apache-opennlp-on-mac-with-brew/
+or all users can download directly from here: https://opennlp.apache.org/download.html
 
 Usage: 
 For analysis of the language in news article and recommendations of other articles with similar content
@@ -34,4 +33,4 @@ We added additional stop words from our own lists, and we also added punctuation
 lists of tokens, stems, and lemmas; 
 Tutorial used for learning how to use OpenNLP: https://www.tutorialkart.com/opennlp/apache-opennlp-tutorial/;
 
-Project Status: on-going. We are working on including a summary analysis and using an API for the sentiment analysis.
+Project Status: On-going. We are working on including a summary analysis and using an API for the sentiment analysis.
