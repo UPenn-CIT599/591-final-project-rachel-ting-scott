@@ -85,9 +85,12 @@ public class RUNNER implements ActionListener{
 			System.out.println(nlp.getTopLemmaToCountList());
 			
 			//3. print out the top names
-			nlp.findTopLemma(nlp.getLemmaArrayList());
+			nlp.findTopPeople(nlp.getPeopleInArticleArrayList());
 			//List<Map.Entry<String, Long>> topPeopleToCountList
 			String topPeople = "";
+			for (Map.Entry<String, Long> peopleMap : nlp.getTopPeopleToCountList()) {
+				topPeople += peopleMap.getKey() + " ";
+			}
 			
 			nlp.getPositivityScore(nlp.getTokenArrayList());
 			int positivityScore =  nlp.getPositivityScore();
@@ -96,7 +99,8 @@ public class RUNNER implements ActionListener{
 			
 			resultAnalysis.setText(
 					"The title is: " + title + "\n" +
-					"The top keywords are: " + lemma + "\n" + 
+					"The top keywords are: " + lemma + "\n" +
+					"The top names are: " + topPeople + "\n" +
 					"The positivity score is: " + positivityScore);
 		}
 	}
