@@ -294,16 +294,52 @@ public class NLPData {
 			}
 		}			
 
-		String namePlusProbability = "";
-		System.out.println("\n------Name : Probability of Accuracy------");
-		for (int i = 0; i < peopleInArticleArrayList.size(); i++) {
-			for (int j = 0; j < nameSpans.length; j++) {
-				namePlusProbability = peopleInArticleArrayList.get(i) + " : " + nameSpans[i].getProb();
-			}
-			System.out.println(namePlusProbability);
-		}
+//		String namePlusProbability = "";
+//		System.out.println("\n------Name : Probability of Accuracy------");
+//		for (int i = 0; i < peopleInArticleArrayList.size(); i++) {
+//			for (int j = 0; j < nameSpans.length; j++) {
+//				namePlusProbability = peopleInArticleArrayList.get(i) + " : " + nameSpans[i].getProb();
+//			}
+//			System.out.println(namePlusProbability);
+//		}
 	}	
 
+//	public void createPeopleToProbsMap(String str) {
+//		/*
+//		 * Must tokenize the webPageText again because stop words cannot be removed for named entity recognition model and 
+//		 * methods to function properly.
+//		 */
+//		String[] tokensArray = tokenizer.tokenize(str.toLowerCase());
+//		Span nameSpans[] = nameFinder.find(tokensArray);
+//
+//		HashMap<String, Integer> namesToProbs = new HashMap<>();
+//		for (int i = 0; i < nameSpans.length; i++) {
+//			String name = tokensArray[nameSpans[i].getStart()];
+//			double[] spanProbs = nameFinder.probs(nameSpans);
+//			
+//			
+//			/*
+//			 * Since 'The', 'I', and 'But' are commonly the first word of a sentence (and thus capitalized), the NER-Person Model
+//			 * includes them as people's names, so removing here increases the accuracy of this method.
+//			 */				
+//			if (!name.equals("The") && (!name.equals("I")) && (!name.equals("But"))) {
+//				peopleInArticleArrayList.add(name);
+//			}
+//		}			
+//
+//		
+//		
+//		String namePlusProbability = "";
+//		System.out.println("\n------Name : Probability of Accuracy------");
+//		for (int i = 0; i < peopleInArticleArrayList.size(); i++) {
+//			for (int j = 0; j < nameSpans.length; j++) {
+//				namePlusProbability = peopleInArticleArrayList.get(i) + " : " + nameSpans[i].getProb();
+//			}
+//			System.out.println(namePlusProbability);
+//		}
+//	}	
+
+	
 	/**
 	 * Uses Array List of people created in the findPeople method to create a map of the people mentioned in the web page 
 	 * and their frequency and then sorts that by converting it to a list and comparing the values in order to return the top n people
@@ -412,20 +448,7 @@ public class NLPData {
 	}
 
 	//TESTING
-	public static void main(String args[]) {
-		String str = "What did the Supreme Court mean in its 2008 decision when it said that the "
-				+ "right to bear arms is an individual right? Back then, Justice Antonin Scalia, writing for the five justice court majority, "
-				+ "framed the right most explicitly as the right to own a gun for self defense in one's home. Moreover, the opinion "
-				+ "contained a paragraph of specific qualifiers that, according to court sources, were added to Scalia's opinion at the "
-				+ "insistence of Justice Kennedy, who provided the fifth vote needed to prevail in the case. The court said, for instance, "
-				+ "that its opinion \"cast no doubt on\" longstanding bans on \"carrying firearms in sensitive places such as schools and "
-				+ "government buildings, or bans on dangerous and unusual weapons. It will make a difference that Justice Kavanaugh is on "
-				+ "the court. But Kennedy — who insisted on that limiting language — has now retired, replaced by Justice Brett Kavanaugh. "
-				+ "And Kavanaugh, as a lower court judge, wrote in favor of expansive gun rights. I do think it will make a difference "
-				+ "that Justice Kavanaugh is on the court,\" says the gun owners' Clement.";
-		NLPData nlp = new NLPData(str);
-		nlp.findPeople(str);
-	}
+//	public static void main(String args[]) {
 	//		NLPData nlp = new NLPData();
 	//		nlp.tokenizer(nlp.getWebPageText());
 	//		ArrayList<String> temp = nlp.getTokenArrayList();
