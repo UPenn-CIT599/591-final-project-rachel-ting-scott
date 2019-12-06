@@ -1,7 +1,5 @@
 import static org.junit.Assert.assertEquals;
-import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.Test;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
@@ -59,14 +57,14 @@ class NLPDataTest {
 	}
 	
 	/**
-	 * Tests tokenizer method with another, difference short string.
+	 * Tests tokenizer method with a different short string.
 	 */
 	@Test
 	void testTokenizer2() {
-		String str = "Now, I'm trying more punctuation! And just different words in general...";	
+		String str = "Now, I'm trying more punctuation! And just different words in general... Especially some (the a me stop words).";	
 		NLPData nlp = new NLPData(str);
 		nlp.tokenizer(str);
-		ArrayList<String> expectedAnswer = new ArrayList<String>(Arrays.asList("punctuation", "words", "general"));
+		ArrayList<String> expectedAnswer = new ArrayList<String>(Arrays.asList("punctuation", "words", "general", "stop", "words"));
 		assertEquals(expectedAnswer, nlp.getTokenArrayList());
 	}
 	
