@@ -37,13 +37,13 @@ public class RUNNER implements ActionListener{
 		myLabel.setBounds(50,50,300,20);
 		result = new JLabel("Website Analysis Result");
 		result.setBounds(50,150,300,20);
-		urlTextBox = new JTextField(30);
-		urlTextBox.setBounds(50,100,300,20);
+		urlTextBox = new JTextField(350);
+		urlTextBox.setBounds(50,100,500,20);
 		resultAnalysis = new JTextArea(10,30);
-		resultAnalysis.setBounds(50,200,300,300);
+		resultAnalysis.setBounds(50,200,500,300);
 		resultAnalysis.setEditable(false);
 		OKButton = new JButton("OK");
-		OKButton.setBounds(350,100,30,30);
+		OKButton.setBounds(550,100,30,30);
 		OKButton.addActionListener(this);
 		
 		frame.add(myLabel);
@@ -51,7 +51,7 @@ public class RUNNER implements ActionListener{
 		frame.add(OKButton);
 		frame.add(result);
 		frame.add(resultAnalysis);
-		frame.setSize(500, 600);
+		frame.setSize(600, 600);
 		frame.setLayout(null);
 		frame.setVisible(true);
 		
@@ -64,22 +64,19 @@ public class RUNNER implements ActionListener{
 		
 		if (e.getSource() == OKButton) {
 			
-			/*
-			 * If it can be like this:
-			 * NLPData nlp = new NLPData(url); // the userinput url get passed into webscraper runScraper() method
-			 * 								   // and then NLPData methods like lemmatizer(),findTopLemma(), etc. get run
-			 * 								   // and I can use nlp.getTopLemmaToCountList() and other getters to convert 
-			 *  							   // the instance variables into Strings
-			 *  							   // These strings can then be passed into resultAnalysis.setText()
-			 *      						   // to be printed in the bottom TextArea of the UI. 
-			 * 
-			 */
-			NLPData nlp = new NLPData(url);
+			WebScraper scraper = new WebScraper();
+			String toBeAnalysed = scraper.runScraper(url);
+			NLPData nlp = new NLPData(toBeAnalysed);
 			nlp.tokenizer(nlp.getWebPageText());
 			ArrayList<String> temp = nlp.getTokenArrayList();
 			nlp.lemmatizer(nlp.getTokenArrayList());
-			nlp.findTopLemma(nlp.getLemmaArrayList());
 			
+			//1. print out the headline
+			String title = "";
+			title = nlp.getTitleOrFirstSentence();
+			
+			//2. print out the top keywords
+			nlp.findTopLemma(nlp.getLemmaArrayList());
 			//List<Map.Entry<String, Long>> topLemmaToCountList
 			String lemma = "";
 			for (Map.Entry<String, Long> lemmaMap : nlp.getTopLemmaToCountList()) {
@@ -87,13 +84,20 @@ public class RUNNER implements ActionListener{
 			}
 			System.out.println(nlp.getTopLemmaToCountList());
 			
+			//3. print out the top names
+			nlp.findTopLemma(nlp.getLemmaArrayList());
+			//List<Map.Entry<String, Long>> topPeopleToCountList
+			String topPeople = "";
 			
 			nlp.getPositivityScore(nlp.getTokenArrayList());
-			String positivityScore = "The positivity score is: " + nlp.getPositivityScore() + ".";
+			int positivityScore =  nlp.getPositivityScore();
 			
 			
 			
-			resultAnalysis.setText("The top lemma words are: " + lemma + "\n" + positivityScore);
+			resultAnalysis.setText(
+					"The title is: " + title + "\n" +
+					"The top keywords are: " + lemma + "\n" + 
+					"The positivity score is: " + positivityScore);
 		}
 	}
 	
