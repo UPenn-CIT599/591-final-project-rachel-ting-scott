@@ -3,6 +3,7 @@ import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -85,6 +86,7 @@ public class RUNNER implements ActionListener{
 			System.out.println(nlp.getTopLemmaToCountList());
 			
 			//3. print out the top names
+			nlp.findPeople();
 			nlp.findTopPeople(nlp.getPeopleInArticleArrayList());
 			//List<Map.Entry<String, Long>> topPeopleToCountList
 			String topPeople = "";
@@ -92,6 +94,22 @@ public class RUNNER implements ActionListener{
 				topPeople += peopleMap.getKey() + " ";
 			}
 			
+			//4. print out the recommended urls
+			URLRecommender recommender = new URLRecommender();
+			// change lemma to arrayList
+			String str[] = lemma.split(" ");
+			ArrayList<String> topKeywords = new ArrayList<String>();
+			for (String singleStr : str) {
+				topKeywords.add(singleStr);
+			}
+ 			recommender.recommendURL(recommender.createMap(), topKeywords);
+			;
+			String ListOfRecommendedURL = "";
+			for (String recommendedURL : recommender.getRecommendations()) {
+				ListOfRecommendedURL += recommendedURL + "\n";
+			}
+			
+			//5. print out the positivity score
 			nlp.getPositivityScore(nlp.getTokenArrayList());
 			int positivityScore =  nlp.getPositivityScore();
 			
@@ -101,6 +119,7 @@ public class RUNNER implements ActionListener{
 					"The title is: " + title + "\n" +
 					"The top keywords are: " + lemma + "\n" +
 					"The top names are: " + topPeople + "\n" +
+					"We recommend these websites to you: " + "\n" + ListOfRecommendedURL + "\n" +
 					"The positivity score is: " + positivityScore);
 		}
 	}
