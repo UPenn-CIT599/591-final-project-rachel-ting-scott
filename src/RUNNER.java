@@ -38,13 +38,13 @@ public class RUNNER implements ActionListener{
 		myLabel.setBounds(50,50,300,20);
 		result = new JLabel("Website Analysis Result");
 		result.setBounds(50,150,300,20);
-		urlTextBox = new JTextField(350);
-		urlTextBox.setBounds(50,100,500,20);
+		urlTextBox = new JTextField(800);
+		urlTextBox.setBounds(50,100,800,20);
 		resultAnalysis = new JTextArea(10,30);
-		resultAnalysis.setBounds(50,200,500,300);
+		resultAnalysis.setBounds(50,200,800,300);
 		resultAnalysis.setEditable(false);
 		OKButton = new JButton("OK");
-		OKButton.setBounds(550,100,30,30);
+		OKButton.setBounds(850,100,30,30);
 		OKButton.addActionListener(this);
 		
 		frame.add(myLabel);
@@ -52,7 +52,7 @@ public class RUNNER implements ActionListener{
 		frame.add(OKButton);
 		frame.add(result);
 		frame.add(resultAnalysis);
-		frame.setSize(600, 600);
+		frame.setSize(1000, 600);
 		frame.setLayout(null);
 		frame.setVisible(true);
 		
@@ -123,9 +123,9 @@ public class RUNNER implements ActionListener{
 			
 			
 			resultAnalysis.setText(
-					"The title is: " + title + "\n\n" +
-					"The top keywords are: " + lemma + "\n\n" +
-					"The top names are: " + topPeople + "\n\n" +
+					"The title is: " + "\n" + title + "\n\n" +
+					"The top keywords are: " + "\n" + lemma + "\n\n" +
+					"The top names are: " + "\n" + topPeople + "\n\n" +
 					"We recommend these websites to you: " + "\n" + ListOfRecommendedURL + "\n" +
 					"The positivity score is: " + positivityScore);
 		}
@@ -134,81 +134,5 @@ public class RUNNER implements ActionListener{
 	public static void main(String[] args) {
 		new RUNNER();
 	}
-	
-	
-//	@Override
-//	public void run() {
-//	//create all the components	
-//	JFrame frame = new JFrame("Website Analyzer");
-//	JPanel outerPanel = new JPanel(new GridLayout(3,3));
-//	JPanel innerTopPanel = new JPanel(new FlowLayout());
-//	JLabel myLabel = new JLabel("Please enter a URL: (Please include http://)");
-//	JPanel innerCenterPanel = new JPanel(new FlowLayout());
-//	JTextField urlTextBox = new JTextField(30);
-//	JButton OKButton = new JButton("OK");
-//	JPanel innerBottomPanel = new JPanel(new FlowLayout());
-//	JLabel result = new JLabel("Result");
-//	JTextArea resultAnalysis = new JTextArea(10,30);
-//	resultAnalysis.setEditable(false);
-//	
-//	//add the components together
-//	//Frame > outerPanel > innerTopPanel     >  myLabel
-//	//					   innerCenterPanel  >  urlTextBox  + OKButton
-//	//					   innerBottomPanel  >  result + resultAnalysis
-//	frame.add(outerPanel);
-//	outerPanel.add(innerTopPanel);
-//	innerTopPanel.add(myLabel);
-//	innerTopPanel.add(innerCenterPanel);
-//	innerCenterPanel.add(urlTextBox);
-//	innerCenterPanel.add(OKButton);
-//	outerPanel.add(innerBottomPanel);
-//	innerBottomPanel.add(result);
-//	innerBottomPanel.add(resultAnalysis);
-//	
-//	
-//	//urlTextBox ActionListener
-//	class urlListener implements ActionListener {		
-//		@Override
-//		public void actionPerformed(ActionEvent e) {
-//			OKButton.addActionListener(new ActionListener() {
-//				@Override
-//				public void actionPerformed(ActionEvent e) {
-//					String url = urlTextBox.getText();
-//					if(e.getSource() == OKButton) {	
-//						resultAnalysis.setText(url);
-//				}	
-//			}});
-//			}
-//		}
-//		
-//	
-////	urlTextBox.addActionListener(new ActionListener() {
-////		@Override
-////		public void actionPerformed(ActionEvent e) {			
-////			AbstractButton myJTextField = null;
-////			String url = myJTextField.getText();
-////		}	
-////	});
-//	
-//	//OKButton ActionListener
-////	OKButton.addActionListener(new ActionListener() {
-////		@Override
-////		public void actionPerformed(ActionEvent e) {
-////			;
-////		}	
-////	});
-//	
-//		
-//	//required pieces of code
-//	frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-//	frame.pack();
-//	frame.setVisible(true);	
-//		
-//	}
-//	
-//	public static void main(String[] args) {
-////		NLPData nlp = new NLPData();
-//		SwingUtilities.invokeLater(new RUNNER());
-//	}
 
 }
