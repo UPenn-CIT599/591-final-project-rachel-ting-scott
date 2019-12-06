@@ -4,13 +4,6 @@ final-project-rachel-ting-scott created by GitHub Classroom
 Name:
 News Article Recommender 
 
-Description:
-This program asks user's to input the URL of a news article and then analyzes the language of it to determine the top n content words 
-and the top n people mentioned, provides a summary of the article (not yet - coming in the future), calculates a sentiment score based 
-on positive or negative scoring on a scale, and provides recommendations for other articles that contain keywords that match the 
-top n content words of the user's original web page. The recommended articles are from a Kaggle data set of NY Times articles: 
-https://www.kaggle.com/harishcscode/all-news-articles-from-home-page-media-house/version/1#nytimes.csv
-
 Instructions: 
 Run the RUNNER class. In the pop-up window, enter the url of the website you wish to run the analysis and click the "OK" button. 
 In the text box below, you will see the analysis results which include the title, the top keywords, the top names, some other websites 
