@@ -192,7 +192,8 @@ public class NLPData {
 	}
 
 	/**
-	 * Grabs all the Tokens; counts their frequency; stores those key-value pairs in a HashMap
+	 * Grabs all the Tokens; counts their frequency; stores those key-value pairs in a hash map; 
+	 * initializes the sentimentAnalysis class and and runs its getScoreOutput method on the hash map.
 	 * @param an array List of cleaned tokens (meaning the stop words have been removed)
 	 */	
 	//	public void createTokenToCountMap(ArrayList<String> cleanTokens) {	
@@ -273,18 +274,18 @@ public class NLPData {
 	}
 
 	/**
-	 * Extracts the people's names from the web page and calculates the probability of accuracy
+	 * Extracts the people's names from the web page.
 	 */
 	public void findPeople(String str) {
 		/*
 		 * Must tokenize the webPageText again because stop words cannot be removed for named entity recognition model and 
 		 * methods to function properly.
 		 */
-		String[] tokensArray = tokenizer.tokenize(str.toLowerCase());
-		Span nameSpans[] = nameFinder.find(tokensArray);
+		String tokens[] = tokenizer.tokenize(str);
+		Span nameSpans[] = nameFinder.find(tokens);
 
 		for (int i = 0; i < nameSpans.length; i++) {
-			String name = tokensArray[nameSpans[i].getStart()];
+			String name = tokens[nameSpans[i].getStart()];
 			/*
 			 * Since 'The', 'I', and 'But' are commonly the first word of a sentence (and thus capitalized), the NER-Person Model
 			 * includes them as people's names, so removing here increases the accuracy of this method.
@@ -294,52 +295,62 @@ public class NLPData {
 			}
 		}			
 
-//		String namePlusProbability = "";
-//		System.out.println("\n------Name : Probability of Accuracy------");
-//		for (int i = 0; i < peopleInArticleArrayList.size(); i++) {
-//			for (int j = 0; j < nameSpans.length; j++) {
-//				namePlusProbability = peopleInArticleArrayList.get(i) + " : " + nameSpans[i].getProb();
-//			}
-//			System.out.println(namePlusProbability);
-//		}
+		String namePlusProbability = "";
+		System.out.println("\n------Name : Probability of Accuracy------");
+		for (int i = 0; i < peopleInArticleArrayList.size(); i++) {
+			for (int j = 0; j < nameSpans.length; j++) {
+				namePlusProbability = peopleInArticleArrayList.get(i) + " : " + nameSpans[i].getProb();
+			}
+			System.out.println(namePlusProbability);
+		}
+
+		//			//TESTING: calculates and displays probability of accuracy of the extraction of people's names
+		//			String namePlusProbability = "";
+		//			System.out.println("\n------Name : Probability of Accuracy------");
+		//			for (int i = 0; i < peopleInArticleArrayList.size(); i++) {
+		//				for (int j = 0; j < nameSpans.length; j++) {
+		//					namePlusProbability = peopleInArticleArrayList.get(i) + " : " + nameSpans[i].getProb();
+		//				}
+		//				System.out.println(namePlusProbability);
+		//			}
 	}	
 
-//	public void createPeopleToProbsMap(String str) {
-//		/*
-//		 * Must tokenize the webPageText again because stop words cannot be removed for named entity recognition model and 
-//		 * methods to function properly.
-//		 */
-//		String[] tokensArray = tokenizer.tokenize(str.toLowerCase());
-//		Span nameSpans[] = nameFinder.find(tokensArray);
-//
-//		HashMap<String, Integer> namesToProbs = new HashMap<>();
-//		for (int i = 0; i < nameSpans.length; i++) {
-//			String name = tokensArray[nameSpans[i].getStart()];
-//			double[] spanProbs = nameFinder.probs(nameSpans);
-//			
-//			
-//			/*
-//			 * Since 'The', 'I', and 'But' are commonly the first word of a sentence (and thus capitalized), the NER-Person Model
-//			 * includes them as people's names, so removing here increases the accuracy of this method.
-//			 */				
-//			if (!name.equals("The") && (!name.equals("I")) && (!name.equals("But"))) {
-//				peopleInArticleArrayList.add(name);
-//			}
-//		}			
-//
-//		
-//		
-//		String namePlusProbability = "";
-//		System.out.println("\n------Name : Probability of Accuracy------");
-//		for (int i = 0; i < peopleInArticleArrayList.size(); i++) {
-//			for (int j = 0; j < nameSpans.length; j++) {
-//				namePlusProbability = peopleInArticleArrayList.get(i) + " : " + nameSpans[i].getProb();
-//			}
-//			System.out.println(namePlusProbability);
-//		}
-//	}	
+	//	public void createPeopleToProbsMap(String str) {
+	//		/*
+	//		 * Must tokenize the webPageText again because stop words cannot be removed for named entity recognition model and 
+	//		 * methods to function properly.
+	//		 */
+	//		String[] tokensArray = tokenizer.tokenize(str.toLowerCase());
+	//		Span nameSpans[] = nameFinder.find(tokensArray);
+	//
+	//		HashMap<String, Integer> namesToProbs = new HashMap<>();
+	//		for (int i = 0; i < nameSpans.length; i++) {
+	//			String name = tokensArray[nameSpans[i].getStart()];
+	//			double[] spanProbs = nameFinder.probs(nameSpans);
+	//			
+	//			
+	//			/*
+	//			 * Since 'The', 'I', and 'But' are commonly the first word of a sentence (and thus capitalized), the NER-Person Model
+	//			 * includes them as people's names, so removing here increases the accuracy of this method.
+	//			 */				
+	//			if (!name.equals("The") && (!name.equals("I")) && (!name.equals("But"))) {
+	//				peopleInArticleArrayList.add(name);
+	//			}
+	//		}			
+	//
+	//		
+	//		
+	//		String namePlusProbability = "";
+	//		System.out.println("\n------Name : Probability of Accuracy------");
+	//		for (int i = 0; i < peopleInArticleArrayList.size(); i++) {
+	//			for (int j = 0; j < nameSpans.length; j++) {
+	//				namePlusProbability = peopleInArticleArrayList.get(i) + " : " + nameSpans[i].getProb();
+	//			}
+	//			System.out.println(namePlusProbability);
+	//		}
+	//	}	
 
-	
+
 	/**
 	 * Uses Array List of people created in the findPeople method to create a map of the people mentioned in the web page 
 	 * and their frequency and then sorts that by converting it to a list and comparing the values in order to return the top n people
@@ -448,7 +459,7 @@ public class NLPData {
 	}
 
 	//TESTING
-//	public static void main(String args[]) {
+	//	public static void main(String args[]) {
 	//		NLPData nlp = new NLPData();
 	//		nlp.tokenizer(nlp.getWebPageText());
 	//		ArrayList<String> temp = nlp.getTokenArrayList();

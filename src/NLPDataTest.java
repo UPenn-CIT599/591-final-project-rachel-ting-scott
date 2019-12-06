@@ -81,14 +81,14 @@ class NLPDataTest {
 	}
 
 	/**
-	 * Tests the createTokenToCountMap method using the short paragraph string (testStr) and array list of tokens (testTokens) 
+	 * Tests the creation of the tokenToCountMap method using the short paragraph string (testStr) and array list of tokens (testTokens) 
 	 * from the instance variables of this class.
 	 * Test accuracy for the lemmatizer depend on the content of the lemmatizer.dict (created by Apache OpenNLP), so a human reader 
 	 * could disagree with the 'expectedAnswer'. However, if a lemma is not in the lemmatizer.dict, then the method will not recognize
 	 * it in the text and thus will not extract it as a lemma in the method.
 	 */
 	@Test
-	void testCreateTokenToCountMap() {
+	void testGetPositivityScore() {
 		NLPData nlp = new NLPData(testStr);
 		HashMap<String, Integer> expectedAnswer = new HashMap<>();
 		for (String str : testTokens) {
@@ -201,7 +201,6 @@ class NLPDataTest {
 				.limit(3).collect(Collectors.toList());
 		nlp.findTopPeople(allPeople);
 		assertEquals(expectedAnswerList, nlp.getTopPeopleToCountList());
-
 	}
 
 	/**
