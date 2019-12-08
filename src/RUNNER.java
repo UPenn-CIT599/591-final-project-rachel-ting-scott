@@ -35,7 +35,7 @@ public class RUNNER implements ActionListener{
 	public RUNNER() {
 	
 		JFrame frame = new JFrame("News Article Recommender");
-		myLabel = new JLabel("Please enter a URL: (Please include http://)");
+		myLabel = new JLabel("Please enter a URL: ");
 		myLabel.setBounds(50,50,300,20);
 		result = new JLabel("Website Analysis Result");
 		result.setBounds(50,150,300,20);
