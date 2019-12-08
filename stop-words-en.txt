@@ -284,6 +284,9 @@ more
 moreover
 most
 mostly
+mr
+mrs
+ms
 much
 must
 mustn't

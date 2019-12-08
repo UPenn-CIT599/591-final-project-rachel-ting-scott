@@ -267,7 +267,8 @@ public class NLPData {
 			 * Since 'The', 'I', and 'But' are commonly the first word of a sentence (and thus capitalized), the NER-Person Model
 			 * includes them as people's names, so removing here increases the accuracy of this method.
 			 */				
-			if (!name.equals("The") && (!name.equals("I")) && (!name.equals("But"))) {
+			if (!name.equals("The") && (!name.equals("I")) && (!name.equals("But") && (!name.equals("Mr.") && 
+					(!name.equals("Mrs.") && (!name.equals("Ms.")))))) {
 				peopleInArticleArrayList.add(name);
 			}
 		}			
