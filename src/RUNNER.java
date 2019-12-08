@@ -4,6 +4,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -99,6 +100,7 @@ public class RUNNER implements ActionListener{
 			
 			//4. print out the recommended urls
 			URLRecommender recommender = new URLRecommender();
+			
 			// change keywords to arrayList
 			String keywords = "";
 			for (Map.Entry<String, Long> lemmaMap : nlp.getTopLemmaToCountList()) {
@@ -109,8 +111,22 @@ public class RUNNER implements ActionListener{
 			for (String singleStr : str) {
 				topKeywords.add(singleStr);
 			}
- 			recommender.recommendURL(recommender.createMap(), topKeywords);
-			;
+			
+			//test
+			System.out.println(topKeywords);
+			
+			HashMap<String[], String> hash = recommender.createMap();
+			//test
+			for (String[] list : hash.keySet()) {
+				System.out.println(Arrays.toString(list));
+			}
+			
+ 			recommender.recommendURL(hash, topKeywords);
+ 			ArrayList<String> recommend = recommender.getRecommendations();
+ 			
+ 			//test
+ 			System.out.println(recommend);
+ 			
 			String ListOfRecommendedURL = "";
 			for (String recommendedURL : recommender.getRecommendations()) {
 				ListOfRecommendedURL += recommendedURL + "\n";

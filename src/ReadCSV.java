@@ -11,7 +11,6 @@ import java.util.List;
  * @author Rachel Friend, Ting-Hsuan Lee, Scott Theer
  */
 public class ReadCSV {
-
 	/**
 	 * Absorbs relevant information (keyword list and URL) from
 	 * NYTimes data set CSV.
