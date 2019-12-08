@@ -42,7 +42,7 @@ public class URLRecommender{
 	 * @param topWords keywords from URL
 	 */
 	public void recommendURL(HashMap<String[], String> hash, ArrayList<String> topWords) {
-		ArrayList<String> recommend = new ArrayList<String>();
+//		ArrayList<String> recommend = new ArrayList<String>();
 		for(String[] keys : hash.keySet()) {
 			for(String word : topWords) {
 				if(Arrays.asList(keys).contains(word)) {

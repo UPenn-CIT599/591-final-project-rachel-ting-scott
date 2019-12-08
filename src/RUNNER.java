@@ -34,7 +34,7 @@ public class RUNNER implements ActionListener{
 	//constructor
 	public RUNNER() {
 	
-		JFrame frame = new JFrame("Website Analyzer");
+		JFrame frame = new JFrame("News Article Recommender");
 		myLabel = new JLabel("Please enter a URL: (Please include http://)");
 		myLabel.setBounds(50,50,300,20);
 		result = new JLabel("Website Analysis Result");
@@ -42,7 +42,7 @@ public class RUNNER implements ActionListener{
 		urlTextBox = new JTextField(800);
 		urlTextBox.setBounds(50,100,800,20);
 		resultAnalysis = new JTextArea(10,30);
-		resultAnalysis.setBounds(50,200,800,300);
+		resultAnalysis.setBounds(50,200,1000,300);
 		resultAnalysis.setEditable(false);
 		OKButton = new JButton("OK");
 		OKButton.setBounds(850,100,30,30);
@@ -53,7 +53,7 @@ public class RUNNER implements ActionListener{
 		frame.add(OKButton);
 		frame.add(result);
 		frame.add(resultAnalysis);
-		frame.setSize(1000, 600);
+		frame.setSize(1100, 600);
 		frame.setLayout(null);
 		frame.setVisible(true);
 		
@@ -98,7 +98,11 @@ public class RUNNER implements ActionListener{
 				n++;
 			}
 			
-			//4. print out the recommended urls
+			//4. print out the positivity score
+			nlp.getPositivityScore(nlp.getTokenArrayList());
+			int positivityScore =  nlp.getPositivityScore();
+			
+			//5. print out the recommended urls
 			URLRecommender recommender = new URLRecommender();
 			
 			// change keywords to arrayList
@@ -112,29 +116,18 @@ public class RUNNER implements ActionListener{
 				topKeywords.add(singleStr);
 			}
 			
-			//test
-			System.out.println(topKeywords);
-			
 			HashMap<String[], String> hash = recommender.createMap();
-			//test
-			for (String[] list : hash.keySet()) {
-				System.out.println(Arrays.toString(list));
-			}
-			
  			recommender.recommendURL(hash, topKeywords);
  			ArrayList<String> recommend = recommender.getRecommendations();
- 			
- 			//test
- 			System.out.println(recommend);
- 			
+
 			String ListOfRecommendedURL = "";
+			int m = 1;
 			for (String recommendedURL : recommender.getRecommendations()) {
-				ListOfRecommendedURL += recommendedURL + "\n";
+				ListOfRecommendedURL += m + ". " + recommendedURL + "\n";
+				m++;
 			}
 			
-			//5. print out the positivity score
-			nlp.getPositivityScore(nlp.getTokenArrayList());
-			int positivityScore =  nlp.getPositivityScore();
+			
 			
 			
 			
@@ -142,8 +135,9 @@ public class RUNNER implements ActionListener{
 					"The title is: " + "\n" + title + "\n\n" +
 					"The top keywords are: " + "\n" + lemma + "\n\n" +
 					"The top names are: " + "\n" + topPeople + "\n\n" +
-					"We recommend these websites to you: " + "\n" + ListOfRecommendedURL + "\n" +
-					"The positivity score is: " + positivityScore);
+					"The positivity score is: " + positivityScore + "\n\n" +
+					"Based on the analysis, we recommend these websites to you: " + "\n" + ListOfRecommendedURL + "\n" );
+					
 		}
 	}
 	
