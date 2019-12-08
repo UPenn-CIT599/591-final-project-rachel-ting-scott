@@ -171,7 +171,7 @@ public class NLPData {
 	}
 
 	/**
-	 * Helper method that takes the String of web page text, tokenizes it, and removes the stop words
+	 * Helper method that takes the String of web page text, tokenizes it, and removes the stop words and punctuation
 	 * @param a string of text
 	 */
 	public void tokenizer(String str) {
@@ -264,11 +264,14 @@ public class NLPData {
 		for (int i = 0; i < nameSpans.length; i++) {
 			String name = tokens[nameSpans[i].getStart()];
 			/*
-			 * Since 'The', 'I', and 'But' are commonly the first word of a sentence (and thus capitalized), the NER-Person Model
-			 * includes them as people's names, so removing here increases the accuracy of this method.
+			 * Since some words are commonly the first word of a sentence (and thus capitalized and where names are often found),
+			 * the NER-Person Model includes them as people's names even though they are clearly not names, so removing here 
+			 * increases the accuracy of this method.
 			 */				
 			if (!name.equals("The") && (!name.equals("I")) && (!name.equals("But") && (!name.equals("Mr.") && 
-					(!name.equals("Mrs.") && (!name.equals("Ms.")))))) {
+					(!name.equals("Mrs.") && (!name.equals("Ms.") && (!name.equals("Dr.")&& (!name.equals("Ms.") && 
+							(!name.equals("He")&& (!name.equals("She") && (!name.equals("They") && (!name.equals("It") && 
+							(!name.equals("We"))))))))))))) {
 				peopleInArticleArrayList.add(name);
 			}
 		}			
@@ -284,7 +287,6 @@ public class NLPData {
 	}		
 
 	/**
-	 * and then compare the values in order to return the top n lemma
 	 * Uses Array List of people created in the findPeople method to create a map of the people mentioned and their frequency, 
 	 * sort that, and then compare the values in order to return the top n people
 	 * @param an array List of cleaned people tokens
